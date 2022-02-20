@@ -1,4 +1,4 @@
-package mapFuncs
+package simpleMap
 
 import (
 	. "github.com/flowonyx/functional"

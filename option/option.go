@@ -1,6 +1,9 @@
 package option
 
-import "errors"
+import (
+	"errors"
+	"fmt"
+)
 
 type optional[T any] interface {
 	IsSome() bool
@@ -10,6 +13,13 @@ type optional[T any] interface {
 
 type Option[T any] struct {
 	value *some[T]
+}
+
+func (o Option[T]) String() string {
+	if o.IsNone() {
+		return "None"
+	}
+	return fmt.Sprintf("Some(%v)", o.Value())
 }
 
 type some[T any] struct {
@@ -62,4 +72,13 @@ func ValueOrDefault[T any](input Option[T], value T) T {
 		return value
 	}
 	return input.Value()
+}
+
+func Map[T, R any](f func(T) R) func(Option[T]) Option[R] {
+	return func(o Option[T]) Option[R] {
+		if o.IsNone() {
+			return None[R]()
+		}
+		return Some(f(o.Value()))
+	}
 }
