@@ -13,7 +13,7 @@ func checker(start, end, step int) (stepOut int, check func(i int) bool) {
 }
 
 func Range(start, end int, step ...int) []int {
-	st := option.ValueOrDefault(TryHead(step), 1)
+	st := option.DefaultValue(1, TryHead(step))
 	if st == 0 {
 		st = 1
 	}
@@ -34,7 +34,7 @@ func RangeTo(end int) []int {
 
 func RangeChan(start, end int, step ...int) <-chan int {
 	output := make(chan int, 1)
-	st := option.ValueOrDefault(TryHead(step), 1)
+	st := option.DefaultValue(1, TryHead(step))
 	if st == 0 {
 		st = 1
 	}
@@ -51,7 +51,7 @@ func RangeChan(start, end int, step ...int) <-chan int {
 }
 
 func DoRange(f func(int), start, end int, step ...int) {
-	st := option.ValueOrDefault(TryHead(step), 1)
+	st := option.DefaultValue(1, TryHead(step))
 	st, check := checker(start, end, st)
 	for i := start; check(i); i += st {
 		f(i)
@@ -73,7 +73,7 @@ func DoRangeToRev(f func(int), end int) {
 }
 
 func DoRangeUntil(f func(int) bool, start, end int, step ...int) {
-	st := option.ValueOrDefault(TryHead(step), 1)
+	st := option.DefaultValue(1, TryHead(step))
 	st, check := checker(start, end, st)
 	for i := start; check(i); i += st {
 		if f(i) {

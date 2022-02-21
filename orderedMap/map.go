@@ -4,6 +4,8 @@ import (
 	"sync"
 
 	. "github.com/flowonyx/functional"
+	"github.com/flowonyx/functional/errors"
+	. "github.com/flowonyx/functional/list"
 	"github.com/flowonyx/functional/option"
 	"golang.org/x/exp/maps"
 	"golang.org/x/exp/slices"
@@ -201,7 +203,7 @@ func (m OrderedMap[Key, T]) Find(key Key) (T, error) {
 	if index, ok := m.keys[key]; ok {
 		return m.pairs[index].Second, nil
 	}
-	return *(new(T)), KeyNotFoundErr
+	return *(new(T)), errors.KeyNotFoundErr
 }
 
 func (m OrderedMap[Key, T]) FindKey(predicate Predicate2[Key, T]) (Key, error) {
@@ -213,7 +215,7 @@ func (m OrderedMap[Key, T]) FindKey(predicate Predicate2[Key, T]) (Key, error) {
 			return key, nil
 		}
 	}
-	return *(new(Key)), KeyNotFoundErr
+	return *(new(Key)), errors.KeyNotFoundErr
 }
 
 func (m OrderedMap[Key, T]) TryFindKey(predicate Predicate2[Key, T]) option.Option[Key] {
@@ -321,7 +323,7 @@ func Pick[Key comparable, T, R any](chooser func(Key, T) option.Option[R], table
 			return v.Value(), nil
 		}
 	}
-	return *(new(R)), KeyNotFoundErr
+	return *(new(R)), errors.KeyNotFoundErr
 }
 
 func TryPick[Key comparable, T, R any](chooser func(Key, T) option.Option[R], table OrderedMap[Key, T]) option.Option[R] {

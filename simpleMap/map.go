@@ -2,6 +2,8 @@ package simpleMap
 
 import (
 	. "github.com/flowonyx/functional"
+	"github.com/flowonyx/functional/errors"
+	. "github.com/flowonyx/functional/list"
 	"github.com/flowonyx/functional/option"
 	"golang.org/x/exp/constraints"
 	"golang.org/x/exp/maps"
@@ -106,7 +108,7 @@ func (m SimpleMap[K, T]) Find(key K) (T, error) {
 	if v := m.TryGet(key); v.IsSome() {
 		return v.Value(), nil
 	}
-	return *(new(T)), KeyNotFoundErr
+	return *(new(T)), errors.KeyNotFoundErr
 }
 
 func (m SimpleMap[K, T]) FindKey(predicate Predicate2[K, T]) (K, error) {
@@ -115,7 +117,7 @@ func (m SimpleMap[K, T]) FindKey(predicate Predicate2[K, T]) (K, error) {
 			return k, nil
 		}
 	}
-	return *(new(K)), KeyNotFoundErr
+	return *(new(K)), errors.KeyNotFoundErr
 }
 
 func (m SimpleMap[K, T]) TryFindKey(predicate Predicate2[K, T]) option.Option[K] {

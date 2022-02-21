@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strconv"
 
+	. "github.com/flowonyx/functional"
 	"github.com/flowonyx/functional/list"
 )
 
@@ -36,7 +37,7 @@ func ExampleIteri2() {
 	input1 := []string{"hello", "hi", "howdy"}
 	input2 := []string{"john", "mary", "tim", "larry"}
 	var r string
-	list.Iteri2(func(i int, t1, t2 string) { r += t1 + " " + t2 + list.IfV(i == len(input1)-1, "").Else(", ") }, input1, input2)
+	list.Iteri2(func(i int, t1, t2 string) { r += t1 + " " + t2 + IfV(i == len(input1)-1, "").Else(", ") }, input1, input2)
 	fmt.Println(r)
 	// Output: hello john, hi mary, howdy tim
 }
@@ -57,7 +58,7 @@ func ExampleIteri3() {
 	input3 := []string{"dunn", "contrary", "tam"}
 	var r string
 	list.Iteri3(func(i int, t1, t2, t3 string) {
-		r += t1 + " " + t2 + " " + t3 + list.IfV(i == list.LastIndexOf(input1), "").Else(", ")
+		r += t1 + " " + t2 + " " + t3 + IfV(i == list.LastIndexOf(input1), "").Else(", ")
 	}, input1, input2, input3)
 	fmt.Println(r)
 	// Output: hello john dunn, hi mary contrary, howdy tim tam

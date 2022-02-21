@@ -4,6 +4,7 @@ import (
 	"strings"
 
 	"github.com/flowonyx/functional"
+	"github.com/flowonyx/functional/list"
 )
 
 func Collect(mapping functional.Projection[rune, string], str string) string {
@@ -42,7 +43,7 @@ func ForAll(predicate functional.Predicate[rune], str string) bool {
 
 func InitString(count int, initializer func(int) string) string {
 	output := &strings.Builder{}
-	functional.DoRangeTo(func(i int) { output.WriteString(initializer(i)) }, count)
+	list.DoRangeTo(func(i int) { output.WriteString(initializer(i)) }, count)
 	return output.String()
 }
 

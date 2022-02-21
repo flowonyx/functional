@@ -2,7 +2,9 @@ package math
 
 import (
 	"math"
+	"strconv"
 
+	"github.com/flowonyx/functional/option"
 	"golang.org/x/exp/constraints"
 )
 
@@ -73,4 +75,12 @@ func Min[T constraints.Ordered](x, y T) T {
 		return x
 	}
 	return y
+}
+
+func TryParseInt[T constraints.Integer](input string) option.Option[T] {
+	r, err := strconv.Atoi(input)
+	if err != nil {
+		return option.None[T]()
+	}
+	return option.Some(T(r))
 }

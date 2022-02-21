@@ -1,4 +1,4 @@
-package list
+package functional
 
 type ifthenelse[T any] struct {
 	conds []bool

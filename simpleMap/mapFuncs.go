@@ -1,6 +1,10 @@
 package simpleMap
 
-import "github.com/flowonyx/functional/option"
+import (
+	. "github.com/flowonyx/functional"
+	"github.com/flowonyx/functional/errors"
+	"github.com/flowonyx/functional/option"
+)
 
 func FilterMap[Key comparable, T any](predicate Predicate2[Key, T], table map[Key]T) map[Key]T {
 	output := make(map[Key]T)
@@ -25,7 +29,7 @@ func FindKeyMap[Key comparable, T any](predicate Predicate2[Key, T], table map[K
 			return k, nil
 		}
 	}
-	return *(new(Key)), KeyNotFoundErr
+	return *(new(Key)), errors.KeyNotFoundErr
 }
 
 func TryFindKeyMap[Key comparable, T any](predicate Predicate2[Key, T], table map[Key]T) option.Option[Key] {

@@ -50,7 +50,7 @@ func Example2Bind() {
 
 func ExampleMapResult() {
 	input := result.OK(1)
-	res := result.MapResult(func(i int) string { return fmt.Sprint("input: ", i) }, input)
+	res := result.Map(func(i int) string { return fmt.Sprint("input: ", i) }, input)
 	fmt.Println(res.Value())
 	// Output: input: 1
 }

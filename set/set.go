@@ -2,6 +2,7 @@ package set
 
 import (
 	"github.com/flowonyx/functional"
+	. "github.com/flowonyx/functional/list"
 	"github.com/flowonyx/functional/orderedMap"
 	"golang.org/x/exp/constraints"
 )
@@ -249,17 +250,17 @@ func Map[T comparable, R comparable](mapping functional.Projection[T, R], s Set[
 }
 
 func MaxElement[T constraints.Ordered](s Set[T]) T {
-	return functional.Max(s.Items()...)
+	return Max(s.Items()...)
 }
 
 func MinElement[T constraints.Ordered](s Set[T]) T {
-	return functional.Min(s.Items()...)
+	return Min(s.Items()...)
 }
 
 func MaxElementBy[T comparable, R constraints.Ordered](projection functional.Projection[T, R], s Set[T]) T {
-	return functional.MaxBy(projection, s.Items())
+	return MaxBy(projection, s.Items())
 }
 
 func MinElementBy[T comparable, R constraints.Ordered](projection functional.Projection[T, R], s Set[T]) T {
-	return functional.MinBy(projection, s.Items())
+	return MinBy(projection, s.Items())
 }

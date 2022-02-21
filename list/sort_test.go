@@ -3,6 +3,7 @@ package list_test
 import (
 	"fmt"
 
+	. "github.com/flowonyx/functional"
 	"github.com/flowonyx/functional/list"
 )
 
@@ -23,7 +24,7 @@ func ExampleSortDescending() {
 func ExampleSortBy() {
 	input := []int{3, 2, 5, 8, 1}
 	r := list.SortBy(func(i int) int {
-		return list.IfV(i < 5, i*10).Else(i)
+		return IfV(i < 5, i*10).Else(i)
 	}, input)
 	fmt.Println(r)
 	// Output: [5 8 1 2 3]
@@ -32,7 +33,7 @@ func ExampleSortBy() {
 func ExampleSortByDescending() {
 	input := []int{3, 2, 5, 8, 1}
 	r := list.SortByDescending(func(i int) int {
-		return list.IfV(i < 5, i*10).Else(i)
+		return IfV(i < 5, i*10).Else(i)
 	}, input)
 	fmt.Println(r)
 	// Output: [3 2 1 8 5]
