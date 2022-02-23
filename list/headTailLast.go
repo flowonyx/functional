@@ -1,6 +1,7 @@
 package list
 
 import (
+	"github.com/flowonyx/functional"
 	"github.com/flowonyx/functional/errors"
 	"github.com/flowonyx/functional/option"
 )
@@ -40,4 +41,17 @@ func TryLast[T any](input []T) option.Option[T] {
 	} else {
 		return option.Some(l)
 	}
+}
+
+func MustHead[T any](input []T) T {
+	return input[0]
+}
+
+func Cons[T any](head T, tail []T) []T {
+	return append([]T{head}, tail...)
+}
+
+func ConsPair[T any](p functional.Pair[T, []T]) []T {
+	head, tail := functional.FromPair(p)
+	return append([]T{head}, tail...)
 }
