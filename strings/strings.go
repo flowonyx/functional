@@ -43,10 +43,22 @@ func Clone[TString ~string](s TString) TString {
 // Collect accepts a function which maps each rune in the given string to a string,
 // then concatenates them together into one string. If str is a descendant of string
 // the actual type of str will be returned.
-func Collect[TString1, TString2 ~string](mapping func(rune) TString2, str TString1) TString1 {
+func Collect[TString1, TString2 ~string, TRune ~rune](mapping func(TRune) TString2, str TString1) TString1 {
 	output := &strings.Builder{}
 	for _, r := range str {
-		output.WriteString(string(mapping(r)))
+		output.WriteString(string(mapping(TRune(r))))
+	}
+	return TString1(output.String())
+}
+
+// Collecti accepts a function which maps each rune in the given string to a string,
+// then concatenates them together into one string. If str is a descendant of string
+// the actual type of str will be returned.
+// The difference between Collecti and Collect is that the mapping function receives the index of the rune.
+func Collecti[TString1, TString2 ~string, TRune ~rune](mapping func(int, TRune) TString2, str TString1) TString1 {
+	output := &strings.Builder{}
+	for i, r := range str {
+		output.WriteString(string(mapping(i, TRune(r))))
 	}
 	return TString1(output.String())
 }
@@ -102,11 +114,7 @@ func EqualFold[TString1, TString2 StringOrRune](s TString1, t TString2) bool {
 
 // Exists checks for the existence of a rune within str that matches the predicate.
 func Exists[TString ~string, TRune ~rune](predicate func(TRune) bool, str TString) bool {
-	f := func(r rune) bool { return predicate(TRune(r)) }
-	if i := strings.IndexFunc(string(str), f); i >= 0 {
-		return true
-	}
-	return false
+	return !ForAll(predicate, str)
 }
 
 // Fields splits the string s around each instance of one or more consecutive white space characters,
@@ -229,10 +237,10 @@ func Iteri[TString ~string](action func(int, rune), str TString) {
 // It uses fmt.Sprint to represent each elem as a string.
 // If you are passing runes or strings, it is slightly faster to call
 // JoinRunes or JoinStrings instead.
-func Join[TString StringOrRune, T any](elems []T, sep TString) string {
+func Join[TSep StringOrRune, T any](elems []T, sep TSep) string {
 	output := &strings.Builder{}
 	for i, v := range elems {
-		output.WriteString(fmt.Sprint(v))
+		output.WriteString(printv(v))
 		if i < list.LastIndexOf(elems) {
 			output.WriteString(string(sep))
 		}
@@ -243,7 +251,7 @@ func Join[TString StringOrRune, T any](elems []T, sep TString) string {
 // JoinRunes joins runes into a string of sep seprated values.
 // If you are trying to join them without a separator, use Concat
 // or simply string(elems) instead.
-func JoinRunes[TString StringOrRune, T ~rune](elems []T, sep TString) string {
+func JoinRunes[TSep StringOrRune, TRune ~rune](elems []TRune, sep TSep) string {
 	output := &strings.Builder{}
 	for i, v := range elems {
 		output.WriteRune(rune(v))
@@ -256,7 +264,7 @@ func JoinRunes[TString StringOrRune, T ~rune](elems []T, sep TString) string {
 
 // JoinStrings joins strings into a string of sep seprated values.
 // If you are trying to join them without a separator, use Concat instead.
-func JoinStrings[TString StringOrRune, T ~string](elems []T, sep TString) string {
+func JoinStrings[TSep StringOrRune, TString ~string](elems []TString, sep TSep) string {
 	return strings.Join(ToStringSlice(elems), string(sep))
 }
 
@@ -289,7 +297,7 @@ func LastIndexRune[TString1 ~string, TRune ~rune](s TString1, r TRune) int {
 		if i < 0 {
 			return index
 		}
-		index += i
+		index += i + 1
 		i = index
 	}
 	return index
@@ -298,7 +306,7 @@ func LastIndexRune[TString1 ~string, TRune ~rune](s TString1, r TRune) int {
 // Lines splits s on newline boundaries into a slice of strings.
 // The results do not include the newlines.
 func Lines[TString ~string](s TString) []TString {
-	return Split(s, []string{"\r\n", "\n"}...)
+	return Split(s, []string{"\r\n", "\r", "\n"}...)
 }
 
 // GetLine gets the value of the line in s indicated by index.
@@ -555,4 +563,15 @@ func splitN[TString1 ~string, TString2 StringOrRune, TInt constraints.Integer](s
 		s = ReplaceAll(s, sep, lastSep)
 	}
 	return list.Map(func(s string) TString1 { return TString1(s) }, splitter(string(s), string(lastSep), int(n)))
+}
+
+func printv(v any) string {
+	switch o := v.(type) {
+	case string:
+		return o
+	case rune:
+		return string(o)
+	default:
+		return fmt.Sprint(o)
+	}
 }

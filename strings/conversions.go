@@ -151,18 +151,16 @@ func findDateFormat[TString ~string](s TString, formats ...string) option.Option
 
 // CamelCaseToUnderscore converts camel case strings to its equivalent as underscore separated.
 func CamelCaseToUnderscore[TString ~string](camel TString) TString {
-	r := list.Mapi(func(i int, r rune) string {
+	return Collecti(func(i int, r rune) TString {
 		if unicode.IsLower(r) {
-			return string(r)
+			return TString(r)
 		}
 		r = unicode.ToLower(r)
 		if i == 0 {
-			return string(r)
+			return TString(r)
 		}
-		return "_" + string(r)
-	}, []rune(camel))
-
-	return TString(Concat(r))
+		return "_" + TString(r)
+	}, camel)
 }
 
 // NormalizeNewLine replaces any "non-normalized" newlines ("\r\n", '\r') with '\n'.
