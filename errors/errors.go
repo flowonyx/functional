@@ -1,5 +1,14 @@
 package errors
 
+import "errors"
+
+var (
+	New    = errors.New
+	As     = errors.As
+	Is     = errors.Is
+	Unwrap = errors.Unwrap
+)
+
 type FunctionalError string
 
 const (

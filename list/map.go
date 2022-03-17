@@ -1,8 +1,6 @@
 package list
 
-import . "github.com/flowonyx/functional"
-
-func Map[T, R any](f Projection[T, R], input []T) []R {
+func Map[T, R any](f func(T) R, input []T) []R {
 	output := make([]R, len(input))
 	iter := func(i int, t T) { output[i] = f(t) }
 	Iteri(iter, input)
@@ -48,7 +46,7 @@ func Mapi3[T, T2, T3, R any](action func(int, T, T2, T3) R, input1 []T, input2 [
 	return output
 }
 
-func Map2D[T, R any](mapping Projection[T, R], input [][]T) [][]R {
+func Map2D[T, R any](mapping func(T) R, input [][]T) [][]R {
 	output := CreateFromStructure2D[T, R](input)
 	iter := func(i, j int, t T) { output[i][j] = mapping(t) }
 	Iteri2D(iter, input)
@@ -62,7 +60,7 @@ func Mapi2D[T, R any](mapping func(int, int, T) R, input [][]T) [][]R {
 	return output
 }
 
-func Map3D[T, R any](mapping Projection[T, R], input [][][]T) [][][]R {
+func Map3D[T, R any](mapping func(T) R, input [][][]T) [][][]R {
 	output := CreateFromStructure3D[T, R](input)
 	iter := func(i, j, k int, t T) { output[i][j][k] = mapping(t) }
 	Iteri3D(iter, input)

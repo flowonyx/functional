@@ -3,8 +3,6 @@ package list
 import (
 	"golang.org/x/exp/constraints"
 	"golang.org/x/exp/slices"
-
-	. "github.com/flowonyx/functional"
 )
 
 func Sort[T constraints.Ordered](input []T) []T {
@@ -19,7 +17,7 @@ func SortDescending[T constraints.Ordered](input []T) []T {
 	return c
 }
 
-func SortBy[T any, Key constraints.Ordered](projection Projection[T, Key], input []T) []T {
+func SortBy[T any, Key constraints.Ordered](projection func(T) Key, input []T) []T {
 	return SortWith(func(t1, t2 T) bool {
 		p1 := projection(t1)
 		p2 := projection(t2)
@@ -27,7 +25,7 @@ func SortBy[T any, Key constraints.Ordered](projection Projection[T, Key], input
 	}, input)
 }
 
-func SortByDescending[T any, Key constraints.Ordered](projection Projection[T, Key], input []T) []T {
+func SortByDescending[T any, Key constraints.Ordered](projection func(T) Key, input []T) []T {
 	return SortWith(func(t1, t2 T) bool {
 		p1 := projection(t1)
 		p2 := projection(t2)

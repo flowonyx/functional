@@ -1,234 +1,336 @@
+// Package result provides a helper type for error handling without returning multiple values.
+// It also provides methodes for dealing with the Result type.
 package result
 
 import (
-	"errors"
-
-	"github.com/flowonyx/functional"
+	"fmt"
 )
 
-type ok[T any] struct {
+type container[T any] struct {
 	value T
 }
 
-type Result[T any] struct {
-	value *ok[T]
-	err   error
+// Result is a helper type for error handling without returning multiple values.
+// Any Result will either contain a value or an error.
+type Result[S, F any] struct {
+	value   *container[S]
+	failure *container[F]
 }
 
-func (r Result[T]) IsOK() bool {
+func (r *Result[_, _]) String() string {
+	if r.IsFailure() {
+		var v any = r.FailureValue()
+		switch f := v.(type) {
+		case error:
+			return f.Error()
+		case string:
+			return f
+		case fmt.Stringer:
+			return f.String()
+		}
+		return fmt.Sprint(v)
+	}
+
+	var v any = r.SuccessValue()
+	switch f := v.(type) {
+	case error:
+		return f.Error()
+	case fmt.Stringer:
+		return f.String()
+	}
+	return fmt.Sprint(v)
+}
+
+// IsOK tests if this Result has a value.
+func (r Result[_, _]) IsSuccess() bool {
 	return r.value != nil
 }
 
-func (r Result[T]) IsError() bool {
-	return r.err != nil
+// IsFailure tests if this Result has a failure.
+func (r Result[_, _]) IsFailure() bool {
+	return r.failure != nil
 }
 
-func (r Result[T]) Value() T {
+// Value returns the value if this Result is OK. If the result is an error, Value returns the zero value of the value type.
+func (r Result[S, _]) SuccessValue() S {
 	if r.value == nil {
-		v := new(T)
+		v := new(S)
 		return *v
 	}
 	return r.value.value
 }
 
-func (r Result[_]) Err() error {
-	return r.err
+// Err returns the error if this Result is Error. Otherwise, it returns nil.
+func (r Result[_, F]) FailureValue() F {
+	if r.failure == nil {
+		v := new(F)
+		return *v
+	}
+	return r.failure.value
 }
 
-func OK[T any](v T) Result[T] {
-	return Result[T]{
-		value: &ok[T]{v},
-		err:   nil,
+// Success creates a Result with a value.
+func Success[S, F any](v S) Result[S, F] {
+	return Result[S, F]{
+		value:   &container[S]{v},
+		failure: nil,
 	}
 }
 
-func Error[T any](err error) Result[T] {
-	return Result[T]{
-		value: nil,
-		err:   err,
+// Failure creates a Result with an error.
+func Failure[S, F any](v F) Result[S, F] {
+	return Result[S, F]{
+		value:   nil,
+		failure: &container[F]{v},
 	}
 }
 
-func HandleResult[T any](input Result[T], whenOK func(r T) error, whenError func(error) error) error {
-	if whenOK == nil {
-		return errors.New("whenOK function must be supplied to HandleOption")
+// HandleResult accepts functions to handle a Result when it has a success or when it has an failure.
+// This will panic if either of the functions are nil.
+func HandleResult[S, F, R any](r Result[S, F], whenSuccess func(S) R, whenFailure func(F) R) R {
+	if whenSuccess == nil {
+		panic("whenSuccess function must be supplied to HandleResult")
 	}
-	if whenError == nil {
-		return errors.New("whenError function must be supplied to HandleOption")
+	if whenFailure == nil {
+		panic("whenFailure function must be supplied to HandleResult")
 	}
-	if input.IsError() {
-		return whenError(input.Err())
+	if r.IsFailure() {
+		return whenFailure(r.FailureValue())
 	}
-	return whenOK(input.Value())
+	return whenSuccess(r.SuccessValue())
 }
 
-func Bind[T, R any](binder func(T) Result[R], result Result[T]) Result[R] {
-	if result.IsError() {
-		return Error[R](result.Err())
+// Bind applies binder when result is Success and otherwise returns the Failure.
+func Bind[S, F, R any](binder func(S) Result[R, F], r Result[S, F]) Result[R, F] {
+	if r.IsFailure() {
+		return Failure[R](r.FailureValue())
 	}
-	return binder(result.Value())
+	return binder(r.SuccessValue())
 }
 
-func Map[T, R any](mapping functional.Projection[T, R], result Result[T]) Result[R] {
-	if result.IsError() {
-		return Error[R](result.Err())
+// Map applies mapping when result is Success and otherwise returns the Failure.
+func Map[S, F, R any](mapping func(S) R, r Result[S, F]) Result[R, F] {
+	if r.IsFailure() {
+		return Failure[R](r.FailureValue())
 	}
-	return OK(mapping(result.Value()))
+	return Success[R, F](mapping(r.SuccessValue()))
 }
 
-func MapError[T any](mapping functional.Projection[error, error], result Result[T]) Result[T] {
-	if result.IsError() {
-		return Error[T](mapping(result.Err()))
+// MapError applies mapping to the error when the result is Failure and otherwise returns the Success.
+func MapError[S, F any](mapping func(F) F, r Result[S, F]) Result[S, F] {
+	if r.IsFailure() {
+		return Failure[S](mapping(r.FailureValue()))
 	}
-	return result
+	return r
 }
 
-func DefaultValue[T any](value T, input Result[T]) T {
-	if input.IsError() {
-		return value
+// DefaultValue returns the value of input if input is Success. Otherwise, it returns success.
+func DefaultValue[S, F any](success S, r Result[S, F]) S {
+	if r.IsFailure() {
+		return success
 	}
-	return input.Value()
+	return r.SuccessValue()
 }
 
-func DefaultWith[T any](defThunk func() T, input Result[T]) T {
-	if input.IsError() {
+// DefaultWith returns the value of input if input is Success. Otherwise, it returns the output of defThunk.
+func DefaultWith[S, F any](defThunk func() S, r Result[S, F]) S {
+	if r.IsFailure() {
 		return defThunk()
 	}
-	return input.Value()
+	return r.SuccessValue()
 }
 
-func Contains[T comparable](value T, o Result[T]) bool {
-	return o.IsOK() && o.Value() == value
+// Contains tests whether the result contains value.
+func Contains[S comparable, F any](value S, r Result[S, F]) bool {
+	return r.IsSuccess() && r.SuccessValue() == value
 }
 
-func Count[T any](o Result[T]) int {
-	if o.IsError() {
+// Count returns 0 if this result is Failure. Otherwise returns 1.
+func Count[S, F any](r Result[S, F]) int {
+	if r.IsFailure() {
 		return 0
 	}
 	return 1
 }
 
-func Exists[T any](predicate functional.Predicate[T], o Result[T]) bool {
-	if o.IsError() {
+// Exists tests whether the value of r matches the predicate. If the Result is an error, it returns false.
+func Exists[S, F any](predicate func(S) bool, r Result[S, F]) bool {
+	if r.IsFailure() {
 		return false
 	}
-	r := predicate(o.Value())
+	return predicate(r.SuccessValue())
+}
+
+// Flatten returns the inner Result when Results are nested.
+func Flatten[S, F any](rr Result[Result[S, F], F]) Result[S, F] {
+	if rr.IsFailure() {
+		return Failure[S](rr.FailureValue())
+	}
+	return rr.SuccessValue()
+}
+
+// Fold applies the folder function to a Result with s being the initial state for the folder.
+// If the Result is an Error, the initial state is returned.
+func Fold[S, F, State any](folder func(State, S) State, s State, r Result[S, F]) State {
+	if r.IsFailure() {
+		return s
+	}
+	return folder(s, r.SuccessValue())
+}
+
+// FoldBack applies the folder function to a Result with s being in the initial state for the folder.
+// If the Result is an Error, the initial state is returned.
+func FoldBack[S, F, State any](folder func(S, State) State, r Result[S, F], s State) State {
+	if r.IsFailure() {
+		return s
+	}
+	return folder(r.SuccessValue(), s)
+}
+
+// ForAll tests whether the value contains the Result matches the predicate.
+// It will always return true if the Result is an Error.
+func ForAll[S, F any](predicate func(S) bool, r Result[S, F]) bool {
+	if r.IsFailure() {
+		return true
+	}
+	return predicate(r.SuccessValue())
+}
+
+// Get returns the value of the Result.
+// If Result is an Error, it panics.
+func Get[S, F any](r Result[S, F]) S {
+	if r.IsFailure() {
+		panic("cannot get value of Error")
+	}
+	return r.SuccessValue()
+}
+
+// IsNone returns true if the Result is an Error.
+func IsNone[S, F any](r Result[S, F]) bool {
+	return r.IsFailure()
+}
+
+// IsSome returns true if the Result is OK.
+func IsSome[S, F any](r Result[S, F]) bool {
+	return r.IsSuccess()
+}
+
+// Iter applies the action to the result.
+func Iter[S, F any](action func(S), r Result[S, F]) {
+	if r.IsFailure() {
+		return
+	}
+	action(r.SuccessValue())
+}
+
+// Map2 applies function f to two Results and returns the function's return value as a Result.
+// If either Result is an Error, it returns the error as the Result.
+func Map2[S1, S2, F, R any](f func(S1, S2) R, r1 Result[S1, F], r2 Result[S2, F]) Result[R, F] {
+	if r1.IsFailure() {
+		return Failure[R](r1.FailureValue())
+	}
+	if r2.IsFailure() {
+		return Failure[R](r2.FailureValue())
+	}
+	return Success[R, F](f(r1.SuccessValue(), r2.SuccessValue()))
+}
+
+// Map3 applies function f to three Results and returns the function's return value as a Result.
+// If any of the Results is an Error, it returns the error as the Result.
+func Map3[S1, S2, S3, F, R any](f func(S1, S2, S3) R, r1 Result[S1, F], r2 Result[S2, F], r3 Result[S3, F]) Result[R, F] {
+	if r1.IsFailure() {
+		return Failure[R](r1.FailureValue())
+	}
+	if r2.IsFailure() {
+		return Failure[R](r2.FailureValue())
+	}
+	if r3.IsFailure() {
+		return Failure[R](r3.FailureValue())
+	}
+	return Success[R, F](f(r1.SuccessValue(), r2.SuccessValue(), r3.SuccessValue()))
+}
+
+// OfNullable creates a result from a pointer.
+// If the pointer is nil, the result will be a Failure with the the message "nil".
+// If the pointer is not nil, the result will be Succeess of the value the pointer points to.
+func OfNullable[S, F any](value *S) Result[S, F] {
+	if value == nil {
+		return Failure[S](*(new(F)))
+	}
+	return Success[S, F](*value)
+}
+
+// OrElse returns r if it is Success or ifNone if r is a Failure.
+func OrElse[S, F any](ifNone Result[S, F], r Result[S, F]) Result[S, F] {
+	if r.IsFailure() {
+		return ifNone
+	}
 	return r
 }
 
-func Filter[T any](predicate functional.Predicate[T], o Result[T]) Result[T] {
-	if Exists(predicate, o) {
-		return o
-	}
-	if o.IsError() {
-		return o
-	}
-	return Error[T](errors.New("does not exist"))
-}
-
-func Flatten[T any](oo Result[Result[T]]) Result[T] {
-	if oo.IsError() {
-		return Error[T](oo.Err())
-	}
-	return oo.Value()
-}
-
-func Fold[T, State any](folder func(State, T) State, s State, o Result[T]) State {
-	r := Map(functional.Curry2To1(folder, s), o)
-	return r.Value()
-}
-
-func FoldBack[T, State any](folder func(T, State) State, o Result[T], s State) State {
-	if o.IsError() {
-		return s
-	}
-	return folder(o.Value(), s)
-}
-
-func ForAll[T any](predicate functional.Predicate[T], o Result[T]) bool {
-	if o.IsError() {
-		return true
-	}
-	return predicate(o.Value())
-}
-
-func Get[T any](o Result[T]) T {
-	if o.IsError() {
-		panic("cannot get value of None")
-	}
-	return o.Value()
-}
-
-func IsNone[T any](o Result[T]) bool {
-	return o.IsError()
-}
-
-func IsSome[T any](o Result[T]) bool {
-	return o.IsOK()
-}
-
-func Iter[T any](action func(T), o Result[T]) {
-	if o.IsError() {
-		return
-	}
-	action(o.Value())
-}
-
-func Map2[T1, T2, R any](f func(T1, T2) R, o1 Result[T1], o2 Result[T2]) Result[R] {
-	if o1.IsError() {
-		return Error[R](o1.Err())
-	}
-	if o2.IsError() {
-		return Error[R](o2.Err())
-	}
-	return OK(f(o1.Value(), o2.Value()))
-}
-
-func Map3[T1, T2, T3, R any](f func(T1, T2, T3) R, o1 Result[T1], o2 Result[T2], o3 Result[T3]) Result[R] {
-	if o1.IsError() {
-		return Error[R](o1.Err())
-	}
-	if o2.IsError() {
-		return Error[R](o2.Err())
-	}
-	if o3.IsError() {
-		return Error[R](o3.Err())
-	}
-	return OK(f(o1.Value(), o2.Value(), o3.Value()))
-}
-
-func OfNullable[T any](value *T) Result[T] {
-	if value == nil {
-		return Error[T](errors.New("nil"))
-	}
-	return OK(*value)
-}
-
-func OrElse[T any](ifNone Result[T], o Result[T]) Result[T] {
-	if o.IsError() {
-		return ifNone
-	}
-	return o
-}
-
-func OrElseWith[T any](ifNoneThunk func() Result[T], o Result[T]) Result[T] {
-	if o.IsError() {
+// OrElseWith returns r if it is Success or the Result returned from ifNoneThunk if r is an Error.
+func OrElseWith[S, F any](ifNoneThunk func() Result[S, F], r Result[S, F]) Result[S, F] {
+	if r.IsFailure() {
 		return ifNoneThunk()
 	}
-	return o
+	return r
 }
 
-func ToSlice[T any](o Result[T]) []T {
-	if o.IsError() {
-		return []T{}
+// ToSlice returns the value in Result as a single item slice.
+// If the Result is an Failure, it returns an empty slice.
+func ToSlice[S, F any](r Result[S, F]) []S {
+	if r.IsFailure() {
+		return []S{}
 	}
-	return []T{o.Value()}
+	return []S{r.SuccessValue()}
 }
 
-func ToNullable[T any](o Result[T]) *T {
-	if o.IsError() {
+// ToNullable returns a pointer to the value in the Result if it is Success.
+// If the Result is an Failure, it returns nil.
+func ToNullable[S, F any](r Result[S, F]) *S {
+	if r.IsFailure() {
 		return nil
 	}
-	v := o.Value()
+	v := r.SuccessValue()
 	return &v
+}
+
+// Lift adapts a function that that returns a value and an error into a function
+// that returns a Result that will be OK if there is no error and Error if there is an error.
+func Lift[S, F any](f func() (S, error)) func() Result[S, F] {
+	return func() Result[S, F] {
+		s, err := f()
+		if err != nil {
+			var fv any = *(new(F))
+			switch e := fv.(type) {
+			case error:
+				return Failure[S](e.(F))
+			case string:
+				var v any = err.Error()
+				return Failure[S](v.(F))
+			}
+			return Failure[S](fv.(F))
+		}
+		return Success[S, F](s)
+	}
+}
+
+// Lift1 adapts a function that that accepts one input and returns a value and an error into a function
+// that returns a Result that will be OK if there is no error and Error if there is an error.
+func Lift1[T, S, F any](f func(T) (S, error)) func(T) Result[S, F] {
+	return func(input T) Result[S, F] {
+		s, err := f(input)
+		lifted := Lift[S, F](func() (S, error) { return s, err })
+		return lifted()
+	}
+}
+
+// Lift2 adapts a function that that accepts two inputs and returns a value and an error into a function
+// that returns a Result that will be OK if there is no error and Error if there is an error.
+func Lift2[T1, T2, S, F any](f func(T1, T2) (S, error)) func(T1, T2) Result[S, F] {
+	return func(input1 T1, input2 T2) Result[S, F] {
+		s, err := f(input1, input2)
+		lifted := Lift[S, F](func() (S, error) { return s, err })
+		return lifted()
+	}
 }

@@ -1,9 +1,11 @@
 package list
 
-func InitSlice[T any](count uint64, initializer func(int) T) []T {
+import "golang.org/x/exp/constraints"
+
+func InitSlice[T any, TCount, TIndex constraints.Integer](count TCount, initializer func(TIndex) T) []T {
 	output := make([]T, count)
 	for i := range output {
-		output[i] = initializer(i)
+		output[i] = initializer(TIndex(i))
 	}
 	return output
 }

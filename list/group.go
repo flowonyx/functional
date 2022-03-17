@@ -2,7 +2,7 @@ package list
 
 import . "github.com/flowonyx/functional"
 
-func GroupBy[T any, Key comparable](projection Projection[T, Key], input []T) []Pair[Key, []T] {
+func GroupBy[T any, Key comparable](projection func(T) Key, input []T) []Pair[Key, []T] {
 	output := []Pair[Key, []T]{}
 	for i := range input {
 		key := projection(input[i])
@@ -20,7 +20,7 @@ func GroupBy[T any, Key comparable](projection Projection[T, Key], input []T) []
 	return output
 }
 
-func GroupByAsMap[T any, Key comparable](projection Projection[T, Key], input []T) map[Key][]T {
+func GroupByAsMap[T any, Key comparable](projection func(T) Key, input []T) map[Key][]T {
 	output := map[Key][]T{}
 	for i := range input {
 		key := projection(input[i])

@@ -1,7 +1,6 @@
 package list
 
 import (
-	. "github.com/flowonyx/functional"
 	"golang.org/x/exp/constraints"
 )
 
@@ -34,13 +33,13 @@ func minMax[T any](test func(T, T) bool, input []T) T {
 	return current
 }
 
-func MaxBy[T any, T2 constraints.Ordered](projection Projection[T, T2], input []T) T {
+func MaxBy[T any, T2 constraints.Ordered](projection func(T) T2, input []T) T {
 	return minMax(func(t1, t2 T) bool {
 		return projection(t1) > projection(t2)
 	}, input)
 }
 
-func MinBy[T any, T2 constraints.Ordered](projection Projection[T, T2], input []T) T {
+func MinBy[T any, T2 constraints.Ordered](projection func(T) T2, input []T) T {
 	return minMax(func(t1, t2 T) bool {
 		return projection(t1) < projection(t2)
 	}, input)

@@ -70,7 +70,7 @@ func (m OrderedMap[Key, T]) Len() int {
 // Equality is based on the keys and values all being the same.
 // Order is not considered.
 func Equal[Key, T comparable](m, m2 OrderedMap[Key, T]) bool {
-	return list.Equal(m.pairs, m2.pairs)
+	return list.EqualUnordered(m.pairs, m2.pairs)
 }
 
 // EqualBy tests whether two OrderedMaps are equal by applying a predicate to each value in both maps.
@@ -108,13 +108,13 @@ func (m *OrderedMap[Key, T]) Set(key Key, value T) {
 		p.Second = value
 		m.pairs[index] = p
 		if m.less != nil {
-			list.SortWith(m.less, m.pairs)
+			m.pairs = list.SortWith(m.less, m.pairs)
 		}
 		return
 	}
 	m.pairs = append(m.pairs, PairOf(key, value))
 	if m.less != nil {
-		list.SortWith(m.less, m.pairs)
+		m.pairs = list.SortWith(m.less, m.pairs)
 	}
 }
 

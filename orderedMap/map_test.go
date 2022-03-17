@@ -31,8 +31,8 @@ func ExampleFromSlice() {
 
 func ExampleEqual() {
 	m := NewOrderedMap[int, string]()
-	m.Set(1, "one")
 	m.Set(2, "two")
+	m.Set(1, "one")
 	m2 := NewOrderedMap[int, string]()
 	m2.Set(1, "one")
 	m2.Set(2, "two")

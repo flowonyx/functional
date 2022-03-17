@@ -1,7 +1,6 @@
 package list
 
 import (
-	. "github.com/flowonyx/functional"
 	"golang.org/x/exp/slices"
 )
 
@@ -16,7 +15,7 @@ func Distinct[T comparable](input []T) []T {
 	return output
 }
 
-func DistinctBy[T any, Key comparable](projection Projection[T, Key], input []T) []T {
+func DistinctBy[T any, Key comparable](projection func(T) Key, input []T) []T {
 	output := Empty[T](len(input))
 	keys := map[Key]struct{}{}
 	Iter(func(t T) {

@@ -1,8 +1,6 @@
 package list
 
-import . "github.com/flowonyx/functional"
-
-func Filter[T any](predicate Predicate[T], input []T) []T {
+func Filter[T any](predicate func(T) bool, input []T) []T {
 	output := Empty[T](len(input))
 
 	Iter(func(t T) {

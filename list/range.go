@@ -3,16 +3,17 @@ package list
 import (
 	"github.com/flowonyx/functional/math"
 	"github.com/flowonyx/functional/option"
+	"golang.org/x/exp/constraints"
 )
 
-func checker(start, end, step int) (stepOut int, check func(i int) bool) {
+func checker[TInt constraints.Integer](start, end TInt, step int) (stepOut int, check func(i TInt) bool) {
 	if start < end {
-		return math.Abs(step), func(i int) bool { return i <= end }
+		return math.Abs(step), func(i TInt) bool { return i <= end }
 	}
-	return -math.Abs(step), func(i int) bool { return i >= end }
+	return -math.Abs(step), func(i TInt) bool { return i >= end }
 }
 
-func Range(start, end int, step ...int) []int {
+func Range[TInt constraints.Integer](start, end TInt, step ...int) []TInt {
 	st := option.DefaultValue(1, TryHead(step))
 	if st == 0 {
 		st = 1
@@ -20,20 +21,20 @@ func Range(start, end int, step ...int) []int {
 
 	st, check := checker(start, end, st)
 
-	ii := Empty[int](math.Abs(start - end))
-	for i := start; check(i); i += st {
+	ii := Empty[TInt](math.Abs(int(start) - int(end)))
+	for i := start; check(i); i += TInt(st) {
 		ii = append(ii, i)
 	}
 
 	return ii
 }
 
-func RangeTo(end int) []int {
+func RangeTo[TInt constraints.Integer](end TInt) []TInt {
 	return Range(0, end)
 }
 
-func RangeChan(start, end int, step ...int) <-chan int {
-	output := make(chan int, 1)
+func RangeChan[TInt constraints.Integer](start, end TInt, step ...int) <-chan TInt {
+	output := make(chan TInt, 1)
 	st := option.DefaultValue(1, TryHead(step))
 	if st == 0 {
 		st = 1
@@ -42,7 +43,7 @@ func RangeChan(start, end int, step ...int) <-chan int {
 	st, check := checker(start, end, st)
 
 	go func() {
-		for i := start; check(i); i += st {
+		for i := start; check(i); i += TInt(st) {
 			output <- i
 		}
 		close(output)
@@ -50,32 +51,32 @@ func RangeChan(start, end int, step ...int) <-chan int {
 	return output
 }
 
-func DoRange(f func(int), start, end int, step ...int) {
+func DoRange[TInt constraints.Integer](f func(TInt), start, end TInt, step ...int) {
 	st := option.DefaultValue(1, TryHead(step))
 	st, check := checker(start, end, st)
-	for i := start; check(i); i += st {
+	for i := start; check(i); i += TInt(st) {
 		f(i)
 	}
 }
 
-func DoRangeTo(f func(int), end int) {
+func DoRangeTo[TInt constraints.Integer](f func(TInt), end TInt) {
 	st, check := checker(0, end, 1)
-	for i := 0; check(i); i += st {
+	for i := TInt(0); check(i); i += TInt(st) {
 		f(i)
 	}
 }
 
-func DoRangeToRev(f func(int), end int) {
+func DoRangeToRev[TInt constraints.Integer](f func(TInt), end TInt) {
 	st, check := checker(end, 0, 1)
-	for i := end; check(i); i += st {
+	for i := end; check(i); i += TInt(st) {
 		f(i)
 	}
 }
 
-func DoRangeUntil(f func(int) bool, start, end int, step ...int) {
+func DoRangeUntil[TInt constraints.Integer](f func(TInt) bool, start, end TInt, step ...int) {
 	st := option.DefaultValue(1, TryHead(step))
 	st, check := checker(start, end, st)
-	for i := start; check(i); i += st {
+	for i := start; check(i); i += TInt(st) {
 		if f(i) {
 			return
 		}

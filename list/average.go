@@ -1,7 +1,6 @@
 package list
 
 import (
-	. "github.com/flowonyx/functional"
 	"golang.org/x/exp/constraints"
 )
 
@@ -14,7 +13,7 @@ func Average[T numeric](input []T) T {
 	return sum / T(len(input))
 }
 
-func AverageBy[T any, R numeric](input []T, projection Projection[T, R]) R {
+func AverageBy[T any, R numeric](input []T, projection func(T) R) R {
 	r := Map(projection, input)
 	return Average(r)
 }

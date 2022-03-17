@@ -19,13 +19,13 @@ func Example2ForAll() {
 }
 
 func ExampleForAll2() {
-	r := list.ForAll2(list.Equal2[int], []int{1, 2, 3}, []int{1, 2, 3})
+	r := list.ForAll2(list.ValueEqual2[int], []int{1, 2, 3}, []int{1, 2, 3})
 	fmt.Println(r)
 	// Output: true
 }
 
 func Example2ForAll2() {
-	r := list.ForAll2(list.Equal2[int], []int{4, 2, 3}, []int{1, 2, 3})
+	r := list.ForAll2(list.ValueEqual2[int], []int{4, 2, 3}, []int{1, 2, 3})
 	fmt.Println(r)
 	// Output: false
 }

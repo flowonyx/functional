@@ -114,7 +114,12 @@ func EqualFold[TString1, TString2 StringOrRune](s TString1, t TString2) bool {
 
 // Exists checks for the existence of a rune within str that matches the predicate.
 func Exists[TString ~string, TRune ~rune](predicate func(TRune) bool, str TString) bool {
-	return !ForAll(predicate, str)
+	for _, r := range str {
+		if predicate(TRune(r)) {
+			return true
+		}
+	}
+	return false
 }
 
 // Fields splits the string s around each instance of one or more consecutive white space characters,
