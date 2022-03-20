@@ -31,7 +31,7 @@ func ExampleForAll2_second() {
 }
 
 func ExampleForAll2_third() {
-	r := list.ForAll2(list.LessThan2[int], []int{1, 2, 3}, []int{2, 3, 4})
+	r := list.ForAll2(list.GreaterThan2[int], []int{1, 2, 3}, []int{2, 3, 4})
 	fmt.Println(r)
 	// Output: true
 }

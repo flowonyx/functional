@@ -20,7 +20,7 @@ func ExampleIndexOf() {
 	// Output: 1
 }
 
-func Example2IndexOf() {
+func ExampleIndexOf_second() {
 	input := []string{"a", "b", "c"}
 	r := list.IndexOf("d", input)
 	fmt.Println(r)

@@ -3,6 +3,7 @@ package list_test
 import (
 	"fmt"
 
+	"github.com/flowonyx/functional/errors"
 	"github.com/flowonyx/functional/list"
 )
 
@@ -18,10 +19,10 @@ func ExampleFind() {
 	// Output: 2
 }
 
-func Example2Find() {
+func ExampleFind_second() {
 	_, err := list.Find(mod6, 1, 2, 3)
-	fmt.Println(err)
-	// Output: key not found
+	fmt.Println(errors.Is(err, errors.NotFoundErr))
+	// Output: true
 }
 
 func ExampleFindBack() {

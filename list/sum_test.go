@@ -13,7 +13,7 @@ func ExampleSum() {
 	// Output: 6
 }
 
-func Example2Sum() {
+func ExampleSum_second() {
 	r := list.Sum([]string{"hello ", "world", "!"})
 	fmt.Println(r)
 	// Output: hello world!

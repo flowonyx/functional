@@ -1,5 +1,7 @@
 package list
 
+import "golang.org/x/exp/slices"
+
 // Filter returns the values that match predicate.
 func Filter[T any](predicate func(T) bool, values ...T) []T {
 	output := make([]T, len(values))
@@ -13,5 +15,5 @@ func Filter[T any](predicate func(T) bool, values ...T) []T {
 		}
 	}, values)
 
-	return output
+	return slices.Clip(output[:i])
 }

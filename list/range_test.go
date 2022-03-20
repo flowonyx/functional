@@ -6,19 +6,19 @@ import (
 	"github.com/flowonyx/functional/list"
 )
 
-func ExampleRange_1() {
+func ExampleRange() {
 	r := list.Range(0, 10)
 	fmt.Println(r)
 	// Output: [0 1 2 3 4 5 6 7 8 9 10]
 }
 
-func ExampleRange_2() {
+func ExampleRange_second() {
 	r := list.Range(10, 0)
 	fmt.Println(r)
 	// Output: [10 9 8 7 6 5 4 3 2 1 0]
 }
 
-func ExampleRange_3() {
+func ExampleRange_third() {
 	r := list.Range(10, 0, 2)
 	fmt.Println(r)
 	// Output: [10 8 6 4 2 0]
@@ -30,7 +30,7 @@ func ExampleRangeTo() {
 	// Output: [0 1 2 3 4 5 6 7 8]
 }
 
-func ExampleRangeSeq() {
+func ExampleRangeChan() {
 	r := list.RangeChan(0, 10)
 	var s []int
 	for i := range r {

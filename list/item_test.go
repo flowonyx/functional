@@ -53,7 +53,7 @@ func ExampleTryItem() {
 	// Output: 2
 }
 
-func Example2TryItem() {
+func ExampleTryItem_second() {
 	input := []int{0, 1, 2, 3, 4}
 	r := list.TryItem(5, input)
 	fmt.Println(r.IsNone())
