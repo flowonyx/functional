@@ -78,7 +78,7 @@ func (s Set[T]) Contains(item T) bool {
 
 // Exists tests whether any item in the Set matches the predicate.
 func (s Set[T]) Exists(predicate func(T) bool) bool {
-	return list.Exists(predicate, s.Items())
+	return list.Exists(predicate, s.Items()...)
 }
 
 // Count returns the number of items in the Set.
@@ -315,10 +315,10 @@ func MinElement[T constraints.Ordered](s Set[T]) T {
 
 // MaxElementBy finds the largest item in the Set s using the return values from projection for comparison.
 func MaxElementBy[T comparable, R constraints.Ordered](projection func(T) R, s Set[T]) T {
-	return list.MaxBy(projection, s.Items())
+	return list.MaxBy(projection, s.Items()...)
 }
 
 // MinElementBy finds the smallest item in the Set s using the return values from projection for comparison.
 func MinElementBy[T comparable, R constraints.Ordered](projection func(T) R, s Set[T]) T {
-	return list.MinBy(projection, s.Items())
+	return list.MinBy(projection, s.Items()...)
 }

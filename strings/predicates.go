@@ -22,7 +22,7 @@ func IsEmail[TString ~string](s TString) bool {
 
 // RuneIsAnyOf checks if the the given rune r is in the given list of runes.
 func RuneIsAnyOf[TRune, TRuneList ~rune](runes []TRuneList, r TRune) bool {
-	return list.Contains(TRuneList(r), runes)
+	return list.Contains(TRuneList(r), runes...)
 }
 
 // RuneIsASCIILower checks if the given rune is an ASCII lower case character.
@@ -57,5 +57,5 @@ func RuneIsNewLine[TRune ~rune](r TRune) bool {
 
 // RuneIsNoneOf checks whether the given rune r is in the given list of runes and returns false if it is present.
 func RuneIsNoneOf[TRune, TRuneList ~rune](runes []TRuneList, r TRune) bool {
-	return !list.Contains(TRuneList(r), runes)
+	return !list.Contains(TRuneList(r), runes...)
 }

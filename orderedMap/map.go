@@ -39,7 +39,7 @@ func FromSlice[Key comparable, T any](s []Pair[Key, T], lessFunc ...func(Pair[Ke
 		lf = lessFunc[0]
 	}
 	// We reverse it to get the latest values for the keys, then reverse it again to get the right order if there is no lessFunc.
-	pairs := list.DistinctBy(func(p Pair[Key, T]) Key { return p.First }, list.Reverse(s))
+	pairs := list.DistinctBy(func(p Pair[Key, T]) Key { return p.First }, list.Reverse(s)...)
 	if lf == nil {
 		pairs = list.Reverse(pairs)
 	} else {

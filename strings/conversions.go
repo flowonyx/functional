@@ -146,7 +146,7 @@ func findDateFormat[TString ~string](s TString, formats ...string) option.Option
 	return list.TryFind(func(f string) bool {
 		_, err := time.Parse(f, string(s))
 		return err == nil
-	}, formats)
+	}, formats...)
 }
 
 // CamelCaseToUnderscore converts camel case strings to its equivalent as underscore separated.
