@@ -1,23 +1,9 @@
 package option
 
 import (
-	"errors"
 	"fmt"
 	"strconv"
-
-	"github.com/flowonyx/functional"
 )
-
-type Optional[T any] interface {
-	IsSome() bool
-	IsNone() bool
-	Value() T
-}
-
-type OptionalCheckOnly interface {
-	IsSome() bool
-	IsNone() bool
-}
 
 type Option[T any] struct {
 	value *some[T]
@@ -59,76 +45,12 @@ func (o Option[T]) Value() T {
 	return o.value.value
 }
 
-// HandleOption accepts a input that is an Optional value and two functions that returns errors.
-// whenSome is the function to use when input.IsSome() is true.
-// whenNone is the function to use when input.IsNone() is true.
-// The error returned by the function that is used will be returned from HandleOption.
-func HandleOption[T any, TOptional Optional[T], F func(T) error, FN func() error](input TOptional, whenSome F, whenNone FN) error {
-	if whenSome == nil {
-		return errors.New("whenSome function must be supplied to HandleOption")
-	}
-	if whenNone == nil {
-		return errors.New("whenNone function must be supplied to HandleOption")
-	}
-	if input.IsNone() {
-		return whenNone()
-	}
-	return whenSome(input.Value())
-}
-
-// HandleOptionIgnoreNone accepts a input that is an Optional value and one function that returns errors.
-// whenSome is the function to use when input.IsSome() is true.
-// The error returned by whenSome will be returned from HandleOption or nil will be returned when input.IsNone().
-func HandleOptionIgnoreNone[T any, TOptional Optional[T], F func(T) error](input TOptional, whenSome F) error {
-	return HandleOption(input, whenSome, func() error { return nil })
-}
-
-// DefaultValue tests whether input.IsNone() and returns value if true.
-// If input.IsSome(), input.Value() is returned.
-func DefaultValue[T any, TOptional Optional[T]](value T, input TOptional) T {
-	if input.IsNone() {
-		return value
-	}
-	return input.Value()
-}
-
-// DefaultValue tests whether input.IsNone() and returns the result of defThunk if true.
-// If input.IsSome(), input.Value() is returned.
-func DefaultWith[T any, TOptional Optional[T]](defThunk func() T, input TOptional) T {
-	if input.IsNone() {
-		return defThunk()
-	}
-	return input.Value()
-}
-
 // Bind applies f to input if input.IsSome() and otherwise returns None.
 func Bind[T, R any](f func(T) Option[R], input Option[T]) Option[R] {
 	if input.IsNone() {
 		return None[R]()
 	}
 	return f(input.Value())
-}
-
-// Contains tests whether the value in the Optional value o is equal to value.
-func Contains[T comparable, TOptional Optional[T]](value T, o TOptional) bool {
-	return o.IsSome() && o.Value() == value
-}
-
-// Count returns 0 if o.IsNone() and 1 if o.IsSome().
-func Count(o OptionalCheckOnly) int {
-	if o.IsNone() {
-		return 0
-	}
-	return 1
-}
-
-// Exists tests is the value in the Optional o matches the predicate.
-// If o.IsNone(), it will return false.
-func Exists[T any, TOptional Optional[T]](predicate func(T) bool, o TOptional) bool {
-	if o.IsNone() {
-		return false
-	}
-	return predicate(o.Value())
 }
 
 // Filter retuns o if the value in o matches the predicate.
@@ -148,48 +70,8 @@ func Flatten[T any](oo Option[Option[T]]) Option[T] {
 	return oo.Value()
 }
 
-// Fold applies
-func Fold[T, State any](folder func(State, T) State, s State, o Option[T]) State {
-	r := Map(functional.Curry2To1(folder, s), o)
-	return r.Value()
-}
-
-func FoldBack[T, State any](folder func(T, State) State, o Option[T], s State) State {
-	if o.IsNone() {
-		return s
-	}
-	return folder(o.Value(), s)
-}
-
-func ForAll[T any](predicate func(T) bool, o Option[T]) bool {
-	if o.IsNone() {
-		return true
-	}
-	return predicate(o.Value())
-}
-
-func Get[T any](o Option[T]) T {
-	if o.IsNone() {
-		panic("cannot get value of None")
-	}
-	return o.Value()
-}
-
-func IsNone[T any](o Option[T]) bool {
-	return o.IsNone()
-}
-
-func IsSome[T any](o Option[T]) bool {
-	return o.IsSome()
-}
-
-func Iter[T any](action func(T), o Option[T]) {
-	if o.IsNone() {
-		return
-	}
-	action(o.Value())
-}
-
+// Map applies f to the value of o and returns the result as an Option.
+// If o is None, it returns None.
 func Map[T, R any](f func(T) R, o Option[T]) Option[R] {
 	if o.IsNone() {
 		return None[R]()
@@ -197,6 +79,8 @@ func Map[T, R any](f func(T) R, o Option[T]) Option[R] {
 	return Some(f(o.Value()))
 }
 
+// Map2 applies f to the values in both o1 and o2 as the first and second parameters and returns the result as an Option.
+// If either option is None, it returns None.
 func Map2[T1, T2, R any](f func(T1, T2) R, o1 Option[T1], o2 Option[T2]) Option[R] {
 	if o1.IsNone() || o2.IsNone() {
 		return None[R]()
@@ -204,6 +88,8 @@ func Map2[T1, T2, R any](f func(T1, T2) R, o1 Option[T1], o2 Option[T2]) Option[
 	return Some(f(o1.Value(), o2.Value()))
 }
 
+// Map3 applies f to the values in o1, o2, and o3 as the first, second, and third parameters and returns the result as an Option.
+// If any of the options are None, it returns None.
 func Map3[T1, T2, T3, R any](f func(T1, T2, T3) R, o1 Option[T1], o2 Option[T2], o3 Option[T3]) Option[R] {
 	if o1.IsNone() || o2.IsNone() || o3.IsNone() {
 		return None[R]()
@@ -211,6 +97,8 @@ func Map3[T1, T2, T3, R any](f func(T1, T2, T3) R, o1 Option[T1], o2 Option[T2],
 	return Some(f(o1.Value(), o2.Value(), o3.Value()))
 }
 
+// OfNullable returns None if value is nil.
+// Otherwise it returns Some of the value (after dereferencing the pointer).
 func OfNullable[T any](value *T) Option[T] {
 	if value == nil {
 		return None[T]()
@@ -218,35 +106,8 @@ func OfNullable[T any](value *T) Option[T] {
 	return Some(*value)
 }
 
-func OrElse[T any](ifNone Option[T], o Option[T]) Option[T] {
-	if o.IsNone() {
-		return ifNone
-	}
-	return o
-}
-
-func OrElseWith[T any](ifNoneThunk func() Option[T], o Option[T]) Option[T] {
-	if o.IsNone() {
-		return ifNoneThunk()
-	}
-	return o
-}
-
-func ToSlice[T any](o Option[T]) []T {
-	if o.IsNone() {
-		return []T{}
-	}
-	return []T{o.Value()}
-}
-
-func ToNullable[T any](o Option[T]) *T {
-	if o.IsNone() {
-		return nil
-	}
-	v := o.Value()
-	return &v
-}
-
+// Lift converts the function f that returns a value and an error
+// to a function that returns an Option.
 func Lift[T any](f func() (T, error)) func() Option[T] {
 	return func() Option[T] {
 		r, err := f()
@@ -257,6 +118,8 @@ func Lift[T any](f func() (T, error)) func() Option[T] {
 	}
 }
 
+// Lift1 converts the function f that accepts a single input and returns a value and an error
+// to a function that accepts a single input and returns an Option.
 func Lift1[TInput, T any](f func(TInput) (T, error)) func(TInput) Option[T] {
 	return func(input TInput) Option[T] {
 		r, err := f(input)
@@ -267,6 +130,8 @@ func Lift1[TInput, T any](f func(TInput) (T, error)) func(TInput) Option[T] {
 	}
 }
 
+// Lift2 converts the function f that accepts two inputs and returns a value and an error
+// to a function that accepts two inputs and returns an Option.
 func Lift2[TInput1, TInput2, T any](f func(TInput1, TInput2) (T, error)) func(TInput1, TInput2) Option[T] {
 	return func(input1 TInput1, input2 TInput2) Option[T] {
 		r, err := f(input1, input2)
@@ -277,6 +142,7 @@ func Lift2[TInput1, TInput2, T any](f func(TInput1, TInput2) (T, error)) func(TI
 	}
 }
 
+// helper function for quoting the internal values
 func printv(v any) string {
 	switch o := v.(type) {
 	case string:

@@ -245,7 +245,7 @@ func TestOfNullable(t *testing.T) {
 		t.Error("OfNullable should be None for nil pointer")
 	}
 	var j int = 42
-	if option.Get(option.OfNullable(&j)) != 42 {
+	if option.Get[int](option.OfNullable(&j)) != 42 {
 		t.Error("OfNullable should be Some(42)")
 	}
 }

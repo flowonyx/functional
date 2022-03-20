@@ -4,6 +4,8 @@ package result
 
 import (
 	"fmt"
+
+	"github.com/flowonyx/functional/option"
 )
 
 type container[T any] struct {
@@ -41,13 +43,23 @@ func (r *Result[_, _]) String() string {
 	return fmt.Sprint(v)
 }
 
-// IsOK tests if this Result has a value.
+// IsSuccess tests if this Result has a value.
 func (r Result[_, _]) IsSuccess() bool {
 	return r.value != nil
 }
 
 // IsFailure tests if this Result has a failure.
 func (r Result[_, _]) IsFailure() bool {
+	return r.failure != nil
+}
+
+// IsSome is an alias for IsSuccess to satisfy the option.Optional interface.
+func (r Result[_, _]) IsSome() bool {
+	return r.value != nil
+}
+
+// IsNone is an alias for IsFailure to satisfy the option.Optional interface.
+func (r Result[_, _]) IsNone() bool {
 	return r.failure != nil
 }
 
@@ -67,6 +79,11 @@ func (r Result[_, F]) FailureValue() F {
 		return *v
 	}
 	return r.failure.value
+}
+
+// Value is an alias for SuccessValue to satisfy the option.Optional interface.
+func (r Result[S, _]) Value() S {
+	return r.SuccessValue()
 }
 
 // Success creates a Result with a value.
@@ -124,41 +141,29 @@ func MapError[S, F any](mapping func(F) F, r Result[S, F]) Result[S, F] {
 	return r
 }
 
-// DefaultValue returns the value of input if input is Success. Otherwise, it returns success.
+// DefaultValue returns the value of r if r is Success. Otherwise, it returns success.
 func DefaultValue[S, F any](success S, r Result[S, F]) S {
-	if r.IsFailure() {
-		return success
-	}
-	return r.SuccessValue()
+	return option.DefaultValue(success, r)
 }
 
-// DefaultWith returns the value of input if input is Success. Otherwise, it returns the output of defThunk.
+// DefaultWith returns the value of r if r is Success. Otherwise, it returns the output of defThunk.
 func DefaultWith[S, F any](defThunk func() S, r Result[S, F]) S {
-	if r.IsFailure() {
-		return defThunk()
-	}
-	return r.SuccessValue()
+	return option.DefaultWith(defThunk, r)
 }
 
 // Contains tests whether the result contains value.
 func Contains[S comparable, F any](value S, r Result[S, F]) bool {
-	return r.IsSuccess() && r.SuccessValue() == value
+	return option.Contains(value, r)
 }
 
 // Count returns 0 if this result is Failure. Otherwise returns 1.
 func Count[S, F any](r Result[S, F]) int {
-	if r.IsFailure() {
-		return 0
-	}
-	return 1
+	return option.Count(r)
 }
 
 // Exists tests whether the value of r matches the predicate. If the Result is an error, it returns false.
 func Exists[S, F any](predicate func(S) bool, r Result[S, F]) bool {
-	if r.IsFailure() {
-		return false
-	}
-	return predicate(r.SuccessValue())
+	return option.Exists(predicate, r)
 }
 
 // Flatten returns the inner Result when Results are nested.
@@ -172,55 +177,40 @@ func Flatten[S, F any](rr Result[Result[S, F], F]) Result[S, F] {
 // Fold applies the folder function to a Result with s being the initial state for the folder.
 // If the Result is an Error, the initial state is returned.
 func Fold[S, F, State any](folder func(State, S) State, s State, r Result[S, F]) State {
-	if r.IsFailure() {
-		return s
-	}
-	return folder(s, r.SuccessValue())
+	return option.Fold(folder, s, r)
 }
 
 // FoldBack applies the folder function to a Result with s being in the initial state for the folder.
 // If the Result is an Error, the initial state is returned.
 func FoldBack[S, F, State any](folder func(S, State) State, r Result[S, F], s State) State {
-	if r.IsFailure() {
-		return s
-	}
-	return folder(r.SuccessValue(), s)
+	return option.FoldBack(folder, r, s)
 }
 
 // ForAll tests whether the value contains the Result matches the predicate.
 // It will always return true if the Result is an Error.
 func ForAll[S, F any](predicate func(S) bool, r Result[S, F]) bool {
-	if r.IsFailure() {
-		return true
-	}
-	return predicate(r.SuccessValue())
+	return option.ForAll(predicate, r)
 }
 
 // Get returns the value of the Result.
 // If Result is an Error, it panics.
 func Get[S, F any](r Result[S, F]) S {
-	if r.IsFailure() {
-		panic("cannot get value of Error")
-	}
-	return r.SuccessValue()
+	return option.Get[S](r)
 }
 
-// IsNone returns true if the Result is an Error.
+// IsNone returns true if the Result is a Failure.
 func IsNone[S, F any](r Result[S, F]) bool {
 	return r.IsFailure()
 }
 
-// IsSome returns true if the Result is OK.
+// IsSome returns true if the Result is Success.
 func IsSome[S, F any](r Result[S, F]) bool {
 	return r.IsSuccess()
 }
 
 // Iter applies the action to the result.
 func Iter[S, F any](action func(S), r Result[S, F]) {
-	if r.IsFailure() {
-		return
-	}
-	action(r.SuccessValue())
+	option.Iter(action, r)
 }
 
 // Map2 applies function f to two Results and returns the function's return value as a Result.
@@ -262,37 +252,24 @@ func OfNullable[S, F any](value *S) Result[S, F] {
 
 // OrElse returns r if it is Success or ifNone if r is a Failure.
 func OrElse[S, F any](ifNone Result[S, F], r Result[S, F]) Result[S, F] {
-	if r.IsFailure() {
-		return ifNone
-	}
-	return r
+	return option.OrElse[S](ifNone, r)
 }
 
 // OrElseWith returns r if it is Success or the Result returned from ifNoneThunk if r is an Error.
 func OrElseWith[S, F any](ifNoneThunk func() Result[S, F], r Result[S, F]) Result[S, F] {
-	if r.IsFailure() {
-		return ifNoneThunk()
-	}
-	return r
+	return option.OrElseWith[S](ifNoneThunk, r)
 }
 
 // ToSlice returns the value in Result as a single item slice.
 // If the Result is an Failure, it returns an empty slice.
 func ToSlice[S, F any](r Result[S, F]) []S {
-	if r.IsFailure() {
-		return []S{}
-	}
-	return []S{r.SuccessValue()}
+	return option.ToSlice[S](r)
 }
 
 // ToNullable returns a pointer to the value in the Result if it is Success.
 // If the Result is an Failure, it returns nil.
 func ToNullable[S, F any](r Result[S, F]) *S {
-	if r.IsFailure() {
-		return nil
-	}
-	v := r.SuccessValue()
-	return &v
+	return option.ToNullable[S](r)
 }
 
 // Lift adapts a function that that returns a value and an error into a function
