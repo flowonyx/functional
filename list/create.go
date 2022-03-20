@@ -1,5 +1,6 @@
 package list
 
+// Create makes a slice of the given length with each item set to value.
 func Create[T any](length int, value T) []T {
 	output := make([]T, length)
 	for i := range output {
@@ -8,6 +9,7 @@ func Create[T any](length int, value T) []T {
 	return output
 }
 
+// Create2D makes a two dimensional slice of the given lengths with each item set to value.
 func Create2D[T any](length1, length2 int, value T) [][]T {
 	output := make([][]T, length1)
 	for i := range output {
@@ -19,6 +21,7 @@ func Create2D[T any](length1, length2 int, value T) [][]T {
 	return output
 }
 
+// Create3D makes a three dimensional slice of the given lengths with each item set to value.
 func Create3D[T any](length1, length2, length3 int, value T) [][][]T {
 	output := make([][][]T, length1)
 	for i := range output {
@@ -33,6 +36,7 @@ func Create3D[T any](length1, length2, length3 int, value T) [][][]T {
 	return output
 }
 
+// Create4D makes a four dimensional slice of the given lengths with each item set to value.
 func Create4D[T any](length1, length2, length3, length4 int, value T) [][][][]T {
 	output := make([][][][]T, length1)
 	for i := range output {
@@ -50,10 +54,7 @@ func Create4D[T any](length1, length2, length3, length4 int, value T) [][][][]T 
 	return output
 }
 
-func ZeroCreate[T any](length int) []T {
-	return make([]T, length)
-}
-
+// ZeroCreate2D makes a two dimensional slice of the given lengths.
 func ZeroCreate2D[T any](length1 int, length2 int) [][]T {
 	output := make([][]T, length1)
 	for i := range output {
@@ -62,6 +63,7 @@ func ZeroCreate2D[T any](length1 int, length2 int) [][]T {
 	return output
 }
 
+// ZeroCreate3D makes a three dimensional slice of the given lengths.
 func ZeroCreate3D[T any](length1, length2, length3 int) [][][]T {
 	output := make([][][]T, length1)
 	for i := range output {
@@ -73,6 +75,7 @@ func ZeroCreate3D[T any](length1, length2, length3 int) [][][]T {
 	return output
 }
 
+// ZeroCreate4D makes a four dimensional slice of the given lengths.
 func ZeroCreate4D[T any](length1, length2, length3, length4 int) [][][][]T {
 	output := make([][][][]T, length1)
 	for i := range output {
@@ -87,19 +90,21 @@ func ZeroCreate4D[T any](length1, length2, length3, length4 int) [][][][]T {
 	return output
 }
 
-func CreateFromStructure2D[T, R any](input [][]T) [][]R {
-	output := make([][]R, len(input))
-	Iteri(func(i int, t []T) { output[i] = make([]R, len(t)) }, input)
+// CreateFromStructure2D makes a two dimensional slice sized according the lengths in structure.
+func CreateFromStructure2D[T, R any](structure [][]T) [][]R {
+	output := make([][]R, len(structure))
+	Iteri(func(i int, t []T) { output[i] = make([]R, len(t)) }, structure)
 	return output
 }
 
-func CreateFromStructure3D[T, R any](input [][][]T) [][][]R {
-	output := make([][][]R, len(input))
+// CreateFromStructure3D makes a three dimensional slice sized according the lengths in structure.
+func CreateFromStructure3D[T, R any](structure [][][]T) [][][]R {
+	output := make([][][]R, len(structure))
 	Iteri(func(i int, t [][]T) {
 		output[i] = make([][]R, len(t))
 		Iteri(func(j int, t []T) {
 			output[i][j] = make([]R, len(t))
-		}, input[i])
-	}, input)
+		}, structure[i])
+	}, structure)
 	return output
 }

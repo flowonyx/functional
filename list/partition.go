@@ -4,17 +4,19 @@ import (
 	"golang.org/x/exp/slices"
 )
 
-func Partition[T any](predicate func(T) bool, input []T) ([]T, []T) {
-	tlist := Empty[T](len(input))
-	flist := Empty[T](len(input))
-	for i := range input {
-		if predicate(input[i]) {
-			tlist = append(tlist, input[i])
+// Partition splits the collection into two collections, containing the elements for which the given predicate returns True and False respectively.
+// Element order is preserved in both of the created lists.
+func Partition[T any](predicate func(T) bool, values []T) (trueValues []T, falseValues []T) {
+	trueValues = Empty[T](len(values))
+	falseValues = Empty[T](len(values))
+	for i := range values {
+		if predicate(values[i]) {
+			trueValues = append(trueValues, values[i])
 		} else {
-			flist = append(flist, input[i])
+			falseValues = append(falseValues, values[i])
 		}
 	}
-	slices.Clip(tlist)
-	slices.Clip(flist)
-	return tlist, flist
+	slices.Clip(trueValues)
+	slices.Clip(falseValues)
+	return trueValues, falseValues
 }

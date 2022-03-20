@@ -1,7 +1,9 @@
 package list
 
-func ChunkBySize[T any](chunkSize int, input []T) [][]T {
-	output := Empty[[]T](len(input)/chunkSize + 1)
+// ChunkBySize accepts a slice of values and returns a two dimensional slice
+// where each inner slice has the length of chunkSize or smaller if at end of values.
+func ChunkBySize[T any](chunkSize int, values []T) [][]T {
+	output := Empty[[]T](len(values)/chunkSize + 1)
 	temp := Empty[T](chunkSize)
 
 	Iter(func(t T) {
@@ -10,7 +12,7 @@ func ChunkBySize[T any](chunkSize int, input []T) [][]T {
 			temp = make([]T, chunkSize)[:0]
 		}
 		temp = append(temp, t)
-	}, input)
+	}, values)
 
 	output = append(output, temp)
 	return output

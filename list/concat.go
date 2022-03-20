@@ -1,19 +1,21 @@
 package list
 
-func Concat[T any](inputs ...[]T) []T {
-	if len(inputs) == 0 {
+// Concat accepts any number of slices and concatenates them into a single slice.
+func Concat[T any](values ...[]T) []T {
+	if len(values) == 0 {
 		return []T{}
 	}
 
-	size := Reduce(0, func(acc int, each []T) int {
-		return acc + len(each)
-	}, inputs)
+	size := SumBy(func(t []T) int { return len(t) }, values)
 
-	output := Empty[T](size)
+	output := make([]T, size)
+
+	i := 0
 
 	Iter2D(func(t T) {
-		output = append(output, t)
-	}, inputs)
+		output[i] = t
+		i++
+	}, values)
 
 	return output
 }

@@ -12,8 +12,10 @@ var (
 type FunctionalError string
 
 const (
-	KeyNotFoundErr = FunctionalError("key not found")
-	BadArgumentErr = FunctionalError("bad argument")
+	KeyNotFoundErr     = FunctionalError("key not found")
+	NotFoundErr        = FunctionalError("not found")
+	BadArgumentErr     = FunctionalError("bad argument")
+	IndexOutOfRangeErr = FunctionalError("index out of range")
 )
 
 func (fe FunctionalError) Error() string {

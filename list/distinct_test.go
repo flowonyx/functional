@@ -8,13 +8,13 @@ import (
 )
 
 func ExampleDistinct() {
-	d := list.Distinct([]int{1, 2, 3, 2, 3, 4})
+	d := list.Distinct(1, 2, 3, 2, 3, 4)
 	fmt.Println(d)
 	// Output: [1 2 3 4]
 }
 
 func ExampleDistinctBy() {
-	d := list.DistinctBy(func(i int) string { return "s:" + strconv.Itoa(i) }, []int{1, 2, 3, 2, 3, 4})
+	d := list.DistinctBy(func(i int) string { return "s:" + strconv.Itoa(i) }, 1, 2, 3, 2, 3, 4)
 	fmt.Println(d)
 	// Output: [1 2 3 4]
 }

@@ -1,28 +1,48 @@
 package list
 
-import "github.com/flowonyx/functional/errors"
+import (
+	"fmt"
 
-func InsertAt[T any](index int, value T, input []T) ([]T, error) {
-	return InsertManyAt(index, []T{value}, input)
+	"github.com/flowonyx/functional/errors"
+)
+
+// InsertAt inserts newValue into existing at the given index.
+// If the index is not in the range of indexes for values, it will return a nil slice and a IndexOutOfRangeErr.
+func InsertAt[T any](index int, newValue T, existing []T) ([]T, error) {
+	if index < 0 || index > len(existing) {
+		return nil, fmt.Errorf("%w: InsertAt(%d, _, [%d]%T)", errors.IndexOutOfRangeErr, index, len(existing), existing)
+	}
+	return InsertManyAt(index, []T{newValue}, existing)
 }
 
-func InsertManyAt[T any](index int, value []T, input []T) ([]T, error) {
-	if index < 0 || index >= len(input) {
-		return nil, errors.BadArgumentErr
+// InsertManyAt inserts newValues into existing at the given index.
+// If the index is not in the range of indexes for existing, it will return a nil slice and a IndexOutOfRangeErr.
+func InsertManyAt[T any](index int, newValues []T, existing []T) ([]T, error) {
+	if index < 0 || index > len(existing) {
+		return nil, fmt.Errorf("%w: InsertManyAt(%d, _, [%d]%T)", errors.IndexOutOfRangeErr, index, len(existing), existing)
 	}
-	return append(input[:index], append(value, input[index:]...)...), nil
+	if index == len(existing) {
+		return append(existing, newValues...), nil
+	}
+	return append(existing[:index], append(newValues, existing[index:]...)...), nil
 }
 
-func RemoveAt[T any](index int, input []T) ([]T, error) {
-	if index < 0 || index >= len(input) {
-		return nil, errors.BadArgumentErr
+// RemoveAt removes the item at index from values.
+// If index is not in the range of indexes for values, it will return a nil slice and a IndexOutOfRangeErr.
+func RemoveAt[T any](index int, values []T) ([]T, error) {
+	if index < 0 || index >= len(values) {
+		return nil, fmt.Errorf("%w: RemoveAt(%d, [%d]%T)", errors.IndexOutOfRangeErr, index, len(values), values)
 	}
-	return RemoveManyAt(index, 1, input)
+	return RemoveManyAt(index, 1, values)
 }
 
-func RemoveManyAt[T any](index int, count int, input []T) ([]T, error) {
-	if index < 0 || index >= len(input) {
-		return nil, errors.BadArgumentErr
+// RemoveManyAt removes count number of items starting at index from values.
+// If index is not in the range of indexes for values, it will return a nil slice and a IndexOutOfRangeErr.
+// If count is larger the the number of items in values starting at index, it will only remove as many items as is in the slice.
+func RemoveManyAt[T any](index int, count int, values []T) ([]T, error) {
+	if index < 0 || index >= len(values) {
+		return nil, fmt.Errorf("%w: RemoveManyAt(%d, [%d]%T)", errors.IndexOutOfRangeErr, index, len(values), values)
 	}
-	return append(input[0:index], input[index+count:]...), nil
+	count = Min(count, len(values)-index)
+	return append(values[0:index], values[index+count:]...), nil
 }

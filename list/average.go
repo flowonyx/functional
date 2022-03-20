@@ -8,12 +8,20 @@ type numeric interface {
 	constraints.Float | constraints.Integer
 }
 
-func Average[T numeric](input []T) T {
-	sum := Sum(input)
-	return sum / T(len(input))
+// Average calculates the average of all provided values.
+func Average[T numeric](values ...T) T {
+	if len(values) == 0 {
+		panic("Average cannot operate on empty list of values")
+	}
+	sum := Sum(values)
+	return sum / T(len(values))
 }
 
-func AverageBy[T any, R numeric](input []T, projection func(T) R) R {
-	r := Map(projection, input)
-	return Average(r)
+// AverageBy applies projection to each value to get the numeric value to be used in the average calculation.
+func AverageBy[T any, R numeric](projection func(T) R, values ...T) R {
+	if len(values) == 0 {
+		panic("AverageBy cannot operate on empty list of values")
+	}
+	r := Map(projection, values)
+	return Average(r...)
 }

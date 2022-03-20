@@ -30,12 +30,6 @@ func ExampleCreate4D() {
 	// Output: [[[[a a] [a a]] [[a a] [a a]]] [[[a a] [a a]] [[a a] [a a]]]]
 }
 
-func ExampleZeroCreate() {
-	a := list.ZeroCreate[int](4)
-	fmt.Println(a)
-	// Output: [0 0 0 0]
-}
-
 func ExampleZeroCreate2D() {
 	a := list.ZeroCreate2D[int](4, 4)
 	fmt.Println(a)

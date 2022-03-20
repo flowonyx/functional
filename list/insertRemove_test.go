@@ -37,9 +37,20 @@ func ExampleRemoveAt() {
 
 }
 
+func ExampleRemoveAt_second() {
+	input := []int{0, 1, 2, 3}
+	r, err := list.RemoveAt(3, input)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(r)
+	// Output: [0 1 2]
+
+}
+
 func ExampleRemoveManyAt() {
 	input := []int{0, 1, 2, 3}
-	r, err := list.RemoveManyAt(2, 2, input)
+	r, err := list.RemoveManyAt(2, 5, input)
 	if err != nil {
 		panic(err)
 	}

@@ -19,13 +19,13 @@ func ExampleMin() {
 }
 
 func ExampleMaxBy() {
-	max := list.MaxBy(func(s string) int { return len(s) }, []string{"short", "longest"})
+	max := list.MaxBy(func(s string) int { return len(s) }, "short", "longest")
 	fmt.Println(max)
 	// Output: longest
 }
 
 func ExampleMinBy() {
-	min := list.MinBy(func(s string) int { return len(s) }, []string{"short", "longest"})
+	min := list.MinBy(func(s string) int { return len(s) }, "short", "longest")
 	fmt.Println(min)
 	// Output: short
 }

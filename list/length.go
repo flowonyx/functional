@@ -1,52 +1,58 @@
 package list
 
-func Len2[T any](input [][]T) int {
-	if len(input) == 0 {
+// Len2 gets the minimum length of the sub slices in the two dimensional slice.
+func Len2[T any](values [][]T) int {
+	if len(values) == 0 {
 		return 0
 	}
-	return MinLen(input...)
+	return MinLen(values...)
 }
 
-func Len3[T any](input [][][]T) int {
-	if len(input) == 0 {
+// Len3 gets the minimum length of the sub slices in the three dimensional slice.
+func Len3[T any](values [][][]T) int {
+	if len(values) == 0 {
 		return 0
 	}
-	min := Len2(input[0])
-	Iter(func(t [][]T) { min = Min(Len2(t), min) }, input)
+	min := Len2(values[0])
+	Iter(func(t [][]T) { min = Min(Len2(t), min) }, values)
 	return min
 }
 
-func Len4[T any](input [][][][]T) int {
-	if len(input) == 0 {
+// Len4 gets the minimum length of the sub slices in the four dimensional slice.
+func Len4[T any](values [][][][]T) int {
+	if len(values) == 0 {
 		return 0
 	}
-	min := Len3(input[0])
-	Iter(func(t [][][]T) { min = Min(Len3(t), min) }, input)
+	min := Len3(values[0])
+	Iter(func(t [][][]T) { min = Min(Len3(t), min) }, values)
 	return min
 }
 
-func MinLen[T any](input ...[]T) int {
-	if len(input) == 0 {
+// MinLen returns the minimum length of the slices.
+func MinLen[T any](values ...[]T) int {
+	if len(values) == 0 {
 		return 0
 	}
-	min := len(input[0])
-	Iter(func(t []T) { min = Min(len(t), min) }, input)
+	min := len(values[0])
+	Iter(func(t []T) { min = Min(len(t), min) }, values)
 	return min
 }
 
-func MinSlice[T any](input ...[]T) []T {
-	min := MinLen(input...)
+// MinSlice returns the first slice within values that has the minimum length.
+func MinSlice[T any](values ...[]T) []T {
+	min := MinLen(values...)
 	minIndex := 0
 	DoRangeUntil(func(i int) bool {
-		if len(input[i]) == min {
+		if len(values[i]) == min {
 			minIndex = i
 			return true
 		}
 		return false
-	}, 0, LastIndexOf(input))
-	return input[minIndex]
+	}, 0, LastIndexOf(values))
+	return values[minIndex]
 }
 
-func LastIndexOf[T any](input []T) int {
-	return len(input) - 1
+// LastIndexOf is just a replacement for len(values) - 1.
+func LastIndexOf[T any](values []T) int {
+	return len(values) - 1
 }

@@ -1,13 +1,17 @@
 package list
 
-func Filter[T any](predicate func(T) bool, input []T) []T {
-	output := Empty[T](len(input))
+// Filter returns the values that match predicate.
+func Filter[T any](predicate func(T) bool, values ...T) []T {
+	output := make([]T, len(values))
+
+	i := 0
 
 	Iter(func(t T) {
 		if predicate(t) {
-			output = append(output, t)
+			output[i] = t
+			i++
 		}
-	}, input)
+	}, values)
 
 	return output
 }

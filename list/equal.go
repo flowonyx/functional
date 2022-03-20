@@ -1,5 +1,7 @@
 package list
 
+// Equal tests the slices s1 and s2 for equality.
+// They are considered equal only if they contain all the same items in the same order.
 func Equal[T comparable](s1 []T, s2 []T) bool {
 	if len(s1) != len(s2) {
 		return false
@@ -7,6 +9,8 @@ func Equal[T comparable](s1 []T, s2 []T) bool {
 	return ForAll2(func(i1, i2 T) bool { return i1 == i2 }, s1, s2)
 }
 
+// EqualUnordered tests the slices s1 and s2 for equality.
+// They are considered equal only if they contain all the same items but the order does not matter.
 func EqualUnordered[T comparable](s1 []T, s2 []T) bool {
 	if len(s1) != len(s2) {
 		return false

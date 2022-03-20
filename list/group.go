@@ -2,16 +2,18 @@ package list
 
 import . "github.com/flowonyx/functional"
 
-func GroupBy[T any, Key comparable](projection func(T) Key, input []T) []Pair[Key, []T] {
+// GroupBy applies projection to each value in values and returns a slice of Pairs where
+// each Pair has a key and a slice of values for which projection returned that key.
+func GroupBy[T any, Key comparable](projection func(T) Key, values []T) []Pair[Key, []T] {
 	output := []Pair[Key, []T]{}
-	for i := range input {
-		key := projection(input[i])
+	for i := range values {
+		key := projection(values[i])
 		o := TryIndexBy(func(p Pair[Key, []T]) bool { return p.First == key }, output)
 		index := o.Value()
-		a := PairOf(key, []T{input[i]})
+		a := PairOf(key, []T{values[i]})
 		if o.IsSome() {
 			a = output[index]
-			a.Second = append(a.Second, input[i])
+			a.Second = append(a.Second, values[i])
 			output[index] = a
 		} else {
 			output = append(output, a)
@@ -20,6 +22,8 @@ func GroupBy[T any, Key comparable](projection func(T) Key, input []T) []Pair[Ke
 	return output
 }
 
+// GroupAsMap applies projection to each value in values and returns a map where
+// each item has a key and a slice of values for which projection returned that key.
 func GroupByAsMap[T any, Key comparable](projection func(T) Key, input []T) map[Key][]T {
 	output := map[Key][]T{}
 	for i := range input {

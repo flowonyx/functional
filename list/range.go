@@ -13,6 +13,8 @@ func checker[TInt constraints.Integer](start, end TInt, step int) (stepOut int, 
 	return -math.Abs(step), func(i TInt) bool { return i >= end }
 }
 
+// Range creates a slice of Integers from start to end.
+// If step is specified, the values will be spaced by that amount.
 func Range[TInt constraints.Integer](start, end TInt, step ...int) []TInt {
 	st := option.DefaultValue(1, TryHead(step))
 	if st == 0 {
@@ -29,10 +31,13 @@ func Range[TInt constraints.Integer](start, end TInt, step ...int) []TInt {
 	return ii
 }
 
+// RangeTo creates a slice of Integers from 0 to end.
 func RangeTo[TInt constraints.Integer](end TInt) []TInt {
 	return Range(0, end)
 }
 
+// RangeChan creates a chan of Integers that it sends values form start to end.
+// If step is specified, the values will be spaced by that amount.
 func RangeChan[TInt constraints.Integer](start, end TInt, step ...int) <-chan TInt {
 	output := make(chan TInt, 1)
 	st := option.DefaultValue(1, TryHead(step))
@@ -51,6 +56,8 @@ func RangeChan[TInt constraints.Integer](start, end TInt, step ...int) <-chan TI
 	return output
 }
 
+// DoRange calls f repeatedly with values from start to end.
+// If step is specified, the values will be spaced by that amount.
 func DoRange[TInt constraints.Integer](f func(TInt), start, end TInt, step ...int) {
 	st := option.DefaultValue(1, TryHead(step))
 	st, check := checker(start, end, st)
@@ -59,6 +66,7 @@ func DoRange[TInt constraints.Integer](f func(TInt), start, end TInt, step ...in
 	}
 }
 
+// DoRangeTo calls f repeatedly with values from 0 to end.
 func DoRangeTo[TInt constraints.Integer](f func(TInt), end TInt) {
 	st, check := checker(0, end, 1)
 	for i := TInt(0); check(i); i += TInt(st) {
@@ -66,6 +74,7 @@ func DoRangeTo[TInt constraints.Integer](f func(TInt), end TInt) {
 	}
 }
 
+// DoRangeToRev calls f repeatedly with values from end to 0.
 func DoRangeToRev[TInt constraints.Integer](f func(TInt), end TInt) {
 	st, check := checker(end, 0, 1)
 	for i := end; check(i); i += TInt(st) {
@@ -73,6 +82,8 @@ func DoRangeToRev[TInt constraints.Integer](f func(TInt), end TInt) {
 	}
 }
 
+// DoRangeUntil calls f repeatedly with values from start to end until f returns true.
+// If step is specified, the values will be spaced by that amount.
 func DoRangeUntil[TInt constraints.Integer](f func(TInt) bool, start, end TInt, step ...int) {
 	st := option.DefaultValue(1, TryHead(step))
 	st, check := checker(start, end, st)

@@ -1,64 +1,100 @@
 package list
 
 import (
+	"fmt"
+
 	"github.com/flowonyx/functional/errors"
 	"github.com/flowonyx/functional/option"
 )
 
-func Item[T any](index int, input []T) (T, error) {
-	if index >= len(input) {
-		return *(new(T)), errors.BadArgumentErr
+// Item is the same as values[index] but instead of a panic
+// it returns a IndexOutOfRangeErr if index is outside of the range of indexes in values.
+func Item[T any](index int, values []T) (T, error) {
+	if index >= len(values) {
+		return *(new(T)), fmt.Errorf("%w: Item(%d, [%d]%T)", errors.IndexOutOfRangeErr, index, len(values), values)
 	}
-	return input[index], nil
+	return values[index], nil
 }
 
-func TryItem[T any](index int, input []T) option.Option[T] {
-	if item, err := Item(index, input); err != nil {
+// TryItem is the same as Some(values[index]) but instead of a panic
+// it returns None if index is outside of the range of indexes in values.
+func TryItem[T any](index int, values []T) option.Option[T] {
+	if item, err := Item(index, values); err != nil {
 		return option.None[T]()
 	} else {
 		return option.Some(item)
 	}
 }
 
-func Item2D[T any](input [][]T, index1, index2 int) (T, error) {
-	if index1 >= len(input) {
-		return *(new(T)), errors.BadArgumentErr
+// Item2D is the same as values[index1][index2] but instead of a panic
+// it returns a IndexOutOfRangeErr if index is outside of the range of indexes in values.
+func Item2D[T any](values [][]T, index1, index2 int) (T, error) {
+	if index1 >= len(values) {
+		return *(new(T)), fmt.Errorf("%w: Item2D(%d, _, [%d][_]%T)", errors.IndexOutOfRangeErr, index1, len(values), values)
 	}
-	return Item(index2, input[index1])
+	if index2 >= len(values[index1]) {
+		return *(new(T)), fmt.Errorf("%w: Item2D(%d, %d, [_][%d]%T)", errors.IndexOutOfRangeErr, index1, index2, len(values[index1]), values)
+	}
+	return values[index1][index2], nil
 }
 
-func TryItem2D[T any](input [][]T, index1, index2 int) option.Option[T] {
-	if item, err := Item2D(input, index1, index2); err != nil {
+// TryItem2D is the same as Some(values[index1][index2]) but instead of a panic
+// it returns None if index is outside of the range of indexes in values.
+func TryItem2D[T any](values [][]T, index1, index2 int) option.Option[T] {
+	if item, err := Item2D(values, index1, index2); err != nil {
 		return option.None[T]()
 	} else {
 		return option.Some(item)
 	}
 }
 
-func Item3D[T any](input [][][]T, index1, index2, index3 int) (T, error) {
-	if index1 >= len(input) {
-		return *(new(T)), errors.BadArgumentErr
+// Item3D is the same as values[index1][index2][index3] but instead of a panic
+// it returns a IndexOutOfRangeErr if index is outside of the range of indexes in values.
+func Item3D[T any](values [][][]T, index1, index2, index3 int) (T, error) {
+	if index1 >= len(values) {
+		return *(new(T)), fmt.Errorf("%w: Item3D(%d, _, _, [%d][_][_]%T)", errors.IndexOutOfRangeErr, index1, len(values), values)
 	}
-	return Item2D(input[index1], index2, index3)
+	if index2 >= len(values[index1]) {
+		return *(new(T)), fmt.Errorf("%w: Item3D(%d, %d, _, [_][%d][_]%T)", errors.IndexOutOfRangeErr, index1, index2, len(values[index1]), values)
+	}
+	if index3 >= len(values[index1][index2]) {
+		return *(new(T)), fmt.Errorf("%w: Item3D(%d, %d, %d, [_][_][%d]%T)", errors.IndexOutOfRangeErr, index1, index2, index3, len(values[index1][index2]), values)
+	}
+	return values[index1][index2][index3], nil
 }
 
-func TryItem3D[T any](input [][][]T, index1, index2, index3 int) option.Option[T] {
-	if item, err := Item3D(input, index1, index2, index3); err != nil {
+// TryItem3D is the same as Some(values[index1][index2][index3]) but instead of a panic
+// it returns None if index is outside of the range of indexes in values.
+func TryItem3D[T any](values [][][]T, index1, index2, index3 int) option.Option[T] {
+	if item, err := Item3D(values, index1, index2, index3); err != nil {
 		return option.None[T]()
 	} else {
 		return option.Some(item)
 	}
 }
 
-func Item4D[T any](input [][][][]T, index1, index2, index3, index4 int) (T, error) {
-	if index1 >= len(input) {
-		return *(new(T)), errors.BadArgumentErr
+// Item4D is the same as values[index1][index2][index3][index4] but instead of a panic
+// it returns a IndexOutOfRangeErr if index is outside of the range of indexes in values.
+func Item4D[T any](values [][][][]T, index1, index2, index3, index4 int) (T, error) {
+	if index1 >= len(values) {
+		return *(new(T)), fmt.Errorf("%w: Item4D(%d, _, _, _, [%d][_][_][_]%T)", errors.IndexOutOfRangeErr, index1, len(values), values)
 	}
-	return Item3D(input[index1], index2, index3, index4)
+	if index2 >= len(values[index1]) {
+		return *(new(T)), fmt.Errorf("%w: Item4D(%d, %d, _, _, [_][%d][_][_]%T)", errors.IndexOutOfRangeErr, index1, index2, len(values[index1]), values)
+	}
+	if index3 >= len(values[index1][index2]) {
+		return *(new(T)), fmt.Errorf("%w: Item4D(%d, %d, %d, _, [_][_][%d][_]%T)", errors.IndexOutOfRangeErr, index1, index2, index3, len(values[index1][index2]), values)
+	}
+	if index4 >= len(values[index1][index2][index3]) {
+		return *(new(T)), fmt.Errorf("%w: Item4D(%d, %d, %d, %d, [_][_][_][%d]%T)", errors.IndexOutOfRangeErr, index1, index2, index3, index4, len(values[index1][index2][index3]), values)
+	}
+	return Item3D(values[index1], index2, index3, index4)
 }
 
-func TryItem4D[T any](input [][][][]T, index1, index2, index3, index4 int) option.Option[T] {
-	if item, err := Item4D(input, index1, index2, index3, index4); err != nil {
+// TryItem4D is the same as Some(values[index1][index2][index3][index4]) but instead of a panic
+// it returns None if index is outside of the range of indexes in values.
+func TryItem4D[T any](values [][][][]T, index1, index2, index3, index4 int) option.Option[T] {
+	if item, err := Item4D(values, index1, index2, index3, index4); err != nil {
 		return option.None[T]()
 	} else {
 		return option.Some(item)

@@ -13,7 +13,7 @@ func ExampleCountBy() {
 
 	input := []foo{{Bar: "a"}, {Bar: "b"}, {Bar: "a"}}
 
-	c := list.CountBy(func(f foo) string { return f.Bar }, input)
+	c := list.CountBy(func(f foo) string { return f.Bar }, input...)
 	fmt.Println(c)
 	// Output: map[a:2 b:1]
 }
