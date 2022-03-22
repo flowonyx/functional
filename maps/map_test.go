@@ -1,4 +1,4 @@
-package simpleMap
+package maps
 
 import (
 	"fmt"
@@ -21,80 +21,80 @@ func ExampleFromSlices() {
 	// Output: 2
 }
 
-func ExampleSimpleMap_Iter() {
+func ExampleIter() {
 	keyvalues := []Pair[string, int]{PairOf("1", 1), PairOf("2", 2), PairOf("3", 3)}
 	m := FromSlice(keyvalues)
-	m.Iter(func(key string, value int) {
+	Iter(func(key string, value int) {
 		if value == 2 {
 			fmt.Println(key)
 		}
-	})
+	}, m)
 	// Output: 2
 }
 
-func ExampleSimpleMap_ToSlice() {
+func ExampleToSlice() {
 	keyvalues := []Pair[string, int]{PairOf("1", 1), PairOf("2", 2), PairOf("3", 3)}
 	m := FromSlice(keyvalues)
-	r := m.ToSlice()
+	r := ToSlice(m)
 	fmt.Println(list.Equal(keyvalues, r))
 	// Output: true
 }
 
-func ExampleSimpleMap_CopyFrom() {
+func ExampleCopyFrom() {
 	keyvalues := []Pair[string, int]{PairOf("1", 1), PairOf("2", 2), PairOf("3", 3)}
 	m := FromSlice(keyvalues)
-	m2 := SimpleMap[string, int]{"3": 4, "4": 5}
+	m2 := map[string]int{"3": 4, "4": 5}
 
-	r := m.CopyFrom(m2)
+	r := CopyFrom(m2, m)
 	fmt.Println(r["1"], r["2"], r["3"], r["4"])
 	// Output: 1 2 4 5
 }
 
-func ExampleSimpleMap_RemoveBy() {
+func ExampleRemoveBy() {
 	keyvalues := []Pair[string, int]{PairOf("1", 1), PairOf("2", 2), PairOf("3", 3), PairOf("4", 5)}
 	m := FromSlice(keyvalues)
-	r := m.RemoveBy(func(key string, value int) bool { return key != strings.FromInt(value) })
-	fmt.Println(len(r), r.TryGet("3"), r.TryGet("4"))
+	r := RemoveBy(func(key string, value int) bool { return key != strings.FromInt(value) }, m)
+	fmt.Println(len(r), TryGet("3", r), TryGet("4", r))
 	// Output: 3 Some(3) None
 }
 
-func ExampleSimpleMap_Filter() {
+func ExampleFilter() {
 	keyvalues := []Pair[string, int]{PairOf("1", 1), PairOf("2", 2), PairOf("3", 3), PairOf("4", 5)}
 	m := FromSlice(keyvalues)
-	r := m.Filter(func(key string, value int) bool { return key != strings.FromInt(value) })
-	fmt.Println(len(r), r.TryGet("3"), r.TryGet("4"))
+	r := Filter(func(key string, value int) bool { return key != strings.FromInt(value) }, m)
+	fmt.Println(len(r), TryGet("3", r), TryGet("4", r))
 	// Output: 1 None Some(5)
 }
 
-func ExampleSimpleMap_TryFindKey() {
+func ExampleTryFindKey() {
 	keyvalues := []Pair[string, int]{PairOf("1", 1), PairOf("2", 2), PairOf("3", 3), PairOf("4", 5)}
 	m := FromSlice(keyvalues)
-	r := m.TryFindKey(func(key string, val int) bool { return key != strings.FromInt(val) })
+	r := TryFindKey(func(key string, val int) bool { return key != strings.FromInt(val) }, m)
 	fmt.Println(r)
 	// Output: Some("4")
 }
 
-func ExampleSimpleMap_Exists() {
+func ExampleExists() {
 	keyvalues := []Pair[string, int]{PairOf("1", 1), PairOf("2", 2), PairOf("3", 3), PairOf("4", 5)}
 	m := FromSlice(keyvalues)
-	r := m.Exists(func(key string, val int) bool { return key != strings.FromInt(val) })
+	r := Exists(func(key string, val int) bool { return key != strings.FromInt(val) }, m)
 	fmt.Println(r)
 	// Output: true
 }
 
-func ExampleSimpleMap_ForAll() {
+func ExampleForAll() {
 	keyvalues := []Pair[string, int]{PairOf("1", 1), PairOf("2", 2), PairOf("3", 3), PairOf("4", 5)}
 	m := FromSlice(keyvalues)
-	r := m.ForAll(func(key string, val int) bool { return key != strings.FromInt(val) })
+	r := ForAll(func(key string, val int) bool { return key != strings.FromInt(val) }, m)
 	fmt.Println(r)
 	// Output: false
 }
 
-func ExampleSimpleMap_Partition() {
+func ExamplePartition() {
 	keyvalues := []Pair[string, int]{PairOf("1", 1), PairOf("2", 2), PairOf("3", 3), PairOf("4", 5)}
 	m := FromSlice(keyvalues)
-	rt, rf := m.Partition(func(key string, val int) bool { return key == strings.FromInt(val) })
-	fmt.Println(rt.Contains("3"), rt.Contains("4"), rf.Contains("4"))
+	rt, rf := Partition(func(key string, val int) bool { return key == strings.FromInt(val) }, m)
+	fmt.Println(Contains("3", rt), Contains("4", rt), Contains("4", rf))
 	// Output: true false true
 }
 

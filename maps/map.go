@@ -1,31 +1,28 @@
 // Package simpleMap provides a map[Key]Value that has some convenient methods.
 // It is not safe for concurrent use any more than the standard map.
-package simpleMap
+package maps
 
 import (
 	"fmt"
 
 	. "github.com/flowonyx/functional"
 	"github.com/flowonyx/functional/errors"
-	. "github.com/flowonyx/functional/list"
+	"github.com/flowonyx/functional/list"
 	"github.com/flowonyx/functional/option"
 	"golang.org/x/exp/constraints"
 	"golang.org/x/exp/maps"
 )
 
-// SimpleMap provides some convenient methods on top of map.
-type SimpleMap[K comparable, T any] map[K]T
-
-func withClone[K comparable, T any](m SimpleMap[K, T], f func(SimpleMap[K, T])) SimpleMap[K, T] {
+func withClone[K comparable, T any](m map[K]T, f func(map[K]T)) map[K]T {
 	m2 := maps.Clone(m)
 	f(m2)
 	return m2
 }
 
 // FromSlice creates a SimpleMap from a slice of key, value pairs.
-func FromSlice[K comparable, T any](s []Pair[K, T]) SimpleMap[K, T] {
-	m := SimpleMap[K, T]{}
-	Iter(func(t Pair[K, T]) {
+func FromSlice[K comparable, T any](s []Pair[K, T]) map[K]T {
+	m := map[K]T{}
+	list.Iter(func(t Pair[K, T]) {
 		key, value := FromPair(t)
 		m[key] = value
 	}, s)
@@ -33,40 +30,40 @@ func FromSlice[K comparable, T any](s []Pair[K, T]) SimpleMap[K, T] {
 }
 
 // FromSlices creates a SimpleMap by combining a slice of keys with a slice of values.
-func FromSlices[K comparable, T any](keys []K, values []T) SimpleMap[K, T] {
-	return FromSlice(Zip(keys, values))
+func FromSlices[K comparable, T any](keys []K, values []T) map[K]T {
+	return FromSlice(list.Zip(keys, values))
 }
 
 // Iter performs the given action for each key, value pair in the map.
-func (m SimpleMap[K, T]) Iter(action func(key K, value T)) {
+func Iter[K comparable, T any](action func(key K, value T), m map[K]T) {
 	for k, v := range m {
 		action(k, v)
 	}
 }
 
 // ToSlice converts the map into a slice of key, value pairs.
-func (m SimpleMap[K, T]) ToSlice() []Pair[K, T] {
+func ToSlice[K comparable, T any](m map[K]T) []Pair[K, T] {
 	p := []Pair[K, T]{}
-	m.Iter(func(key K, value T) {
+	Iter(func(key K, value T) {
 		p = append(p, PairOf(key, value))
-	})
+	}, m)
 	return p
 }
 
 // Set returns a copy of the map with the key set to the new value.
-func (m SimpleMap[K, T]) Set(key K, value T) SimpleMap[K, T] {
-	return withClone(m, func(m SimpleMap[K, T]) { m[key] = value })
+func Set[K comparable, T any](key K, value T, m map[K]T) map[K]T {
+	return withClone(m, func(m map[K]T) { m[key] = value })
 }
 
 // Get returns the value of the given key.
 // If the key does not exist, it will be the zero value of the value type.
-func (m SimpleMap[K, T]) Get(key K) T {
+func Get[K comparable, T any](key K, m map[K]T) T {
 	return m[key]
 }
 
 // TryGet returns an optional value of the given key.
 // If the key does not exist, the returned value will be None.
-func (m SimpleMap[K, T]) TryGet(key K) option.Option[T] {
+func TryGet[K comparable, T any](key K, m map[K]T) option.Option[T] {
 	if v, ok := m[key]; ok {
 		return option.Some(v)
 	}
@@ -74,28 +71,28 @@ func (m SimpleMap[K, T]) TryGet(key K) option.Option[T] {
 }
 
 // Clone creates a copy of the map.
-func (m SimpleMap[K, T]) Clone() SimpleMap[K, T] {
+func Clone[K comparable, T any](m map[K]T) map[K]T {
 	return maps.Clone(m)
 }
 
 // Clear returns a copy of the map with all keys cleared.
-func (m SimpleMap[K, T]) Clear() SimpleMap[K, T] {
-	return withClone(m, func(m SimpleMap[K, T]) { maps.Clear(m) })
+func Clear[K comparable, T any](m map[K]T) map[K]T {
+	return withClone(m, func(m map[K]T) { maps.Clear(m) })
 }
 
 // CopyFrom returns a copy of the map with values copied from src.
-func (m SimpleMap[K, T]) CopyFrom(src SimpleMap[K, T]) SimpleMap[K, T] {
-	return withClone(m, func(m SimpleMap[K, T]) { maps.Copy(m, src) })
+func CopyFrom[K comparable, T any](src map[K]T, dest map[K]T) map[K]T {
+	return withClone(dest, func(m map[K]T) { maps.Copy(m, src) })
 }
 
 // Remove returns a copy of the map with the given key deleted.
-func (m SimpleMap[K, T]) Remove(key K) SimpleMap[K, T] {
-	return withClone(m, func(m SimpleMap[K, T]) { delete(m, key) })
+func Remove[K comparable, T any](key K, m map[K]T) map[K]T {
+	return withClone(m, func(m map[K]T) { delete(m, key) })
 }
 
 // RemoveBy returns a copy of the map with all keys matched by the del predicate removed.
-func (m SimpleMap[K, T]) RemoveBy(del func(K, T) bool) SimpleMap[K, T] {
-	return withClone(m, func(m SimpleMap[K, T]) {
+func RemoveBy[K comparable, T any](del func(K, T) bool, m map[K]T) map[K]T {
+	return withClone(m, func(m map[K]T) {
 		for k, v := range m {
 			if del(k, v) {
 				delete(m, k)
@@ -105,8 +102,8 @@ func (m SimpleMap[K, T]) RemoveBy(del func(K, T) bool) SimpleMap[K, T] {
 }
 
 // Filter returns a copy of the map with only key, value pairs matching the given predicate.
-func (m SimpleMap[K, T]) Filter(predicate func(K, T) bool) SimpleMap[K, T] {
-	m2 := make(SimpleMap[K, T])
+func Filter[K comparable, T any](predicate func(K, T) bool, m map[K]T) map[K]T {
+	m2 := make(map[K]T)
 	for k, v := range m {
 		if predicate(k, v) {
 			m2[k] = v
@@ -116,8 +113,8 @@ func (m SimpleMap[K, T]) Filter(predicate func(K, T) bool) SimpleMap[K, T] {
 }
 
 // Find either returns the value belonging to the key or returns a KeyNotFound error if the key is not present.
-func (m SimpleMap[K, T]) Find(key K) (T, error) {
-	if v := m.TryGet(key); v.IsSome() {
+func Find[K comparable, T any](key K, m map[K]T) (T, error) {
+	if v := TryGet(key, m); v.IsSome() {
 		return v.Value(), nil
 	}
 	return *(new(T)), fmt.Errorf("SimpleMap.Find(%v): %w", key, errors.KeyNotFoundErr)
@@ -125,7 +122,7 @@ func (m SimpleMap[K, T]) Find(key K) (T, error) {
 
 // FindKey finds the first key in the map that is matched by the predicate. Remember that no order can be assumed.
 // If no key is matched by the predicate, it returns a KeyNotFound error.
-func (m SimpleMap[K, T]) FindKey(predicate func(K, T) bool) (K, error) {
+func FindKey[K comparable, T any](predicate func(K, T) bool, m map[K]T) (K, error) {
 	for k, v := range m {
 		if predicate(k, v) {
 			return k, nil
@@ -135,8 +132,8 @@ func (m SimpleMap[K, T]) FindKey(predicate func(K, T) bool) (K, error) {
 }
 
 // TryFindKey is just like FindKey but it returns an option with the value of None if the key is not found.
-func (m SimpleMap[K, T]) TryFindKey(predicate func(K, T) bool) option.Option[K] {
-	key, err := m.FindKey(predicate)
+func TryFindKey[K comparable, T any](predicate func(K, T) bool, m map[K]T) option.Option[K] {
+	key, err := FindKey(predicate, m)
 	if err != nil {
 		return option.None[K]()
 	}
@@ -144,28 +141,28 @@ func (m SimpleMap[K, T]) TryFindKey(predicate func(K, T) bool) option.Option[K] 
 }
 
 // Keys returns a slice of all the keys in the map.
-func (m SimpleMap[K, T]) Keys() []K {
+func Keys[K comparable, T any](m map[K]T) []K {
 	return maps.Keys(m)
 }
 
 // Values returns a slice of all the values in the map.
-func (m SimpleMap[K, T]) Values() []T {
+func Values[K comparable, T any](m map[K]T) []T {
 	return maps.Values(m)
 }
 
 // Len returns the count of items in the map.
-func (m SimpleMap[K, T]) Len() int {
+func Len[K comparable, T any](m map[K]T) int {
 	return len(m)
 }
 
 // Contains test if the mapt contains the given key.
-func (m SimpleMap[K, T]) Contains(key K) bool {
+func Contains[K comparable, T any](key K, m map[K]T) bool {
 	_, ok := m[key]
 	return ok
 }
 
 // Exists tests if the map contains a key, value pair that matches the predicate.
-func (m SimpleMap[K, T]) Exists(predicate func(K, T) bool) bool {
+func Exists[K comparable, T any](predicate func(K, T) bool, m map[K]T) bool {
 	for k, v := range m {
 		if predicate(k, v) {
 			return true
@@ -175,7 +172,7 @@ func (m SimpleMap[K, T]) Exists(predicate func(K, T) bool) bool {
 }
 
 // ForAll tests if all key, value pairs in the mapt match the predicate.
-func (m SimpleMap[K, T]) ForAll(predicate func(K, T) bool) bool {
+func ForAll[K comparable, T any](predicate func(K, T) bool, m map[K]T) bool {
 	for k, v := range m {
 		if !predicate(k, v) {
 			return false
@@ -185,16 +182,16 @@ func (m SimpleMap[K, T]) ForAll(predicate func(K, T) bool) bool {
 }
 
 // IsEmpty tests if the map contains nothing.
-func (m SimpleMap[K, T]) IsEmpty() bool {
+func IsEmpty[K comparable, T any](m map[K]T) bool {
 	return len(m) == 0
 }
 
 // Partition returns two maps:
 // The first contains key, value pairs from this map that match the predicate.
 // The second contains key, value pairs from this map that do not match the predicate.
-func (m SimpleMap[Key, T]) Partition(predicate func(Key, T) bool) (trueMap SimpleMap[Key, T], falseMap SimpleMap[Key, T]) {
-	trueMap = SimpleMap[Key, T]{}
-	falseMap = SimpleMap[Key, T]{}
+func Partition[K comparable, T any](predicate func(K, T) bool, m map[K]T) (trueMap map[K]T, falseMap map[K]T) {
+	trueMap = map[K]T{}
+	falseMap = map[K]T{}
 	for key, value := range m {
 		if predicate(key, value) {
 			trueMap[key] = value
@@ -207,23 +204,23 @@ func (m SimpleMap[Key, T]) Partition(predicate func(Key, T) bool) (trueMap Simpl
 
 // FoldMap applies the folder function to each key, value pair in table until it reaches the finished state.
 // The key, value pairs are sorted by key.
-func FoldMap[K constraints.Ordered, T, State any](folder func(State, K, T) State, initial State, table SimpleMap[K, T]) State {
-	return Fold(func(s State, t Pair[K, T]) State {
+func FoldMap[K constraints.Ordered, T, State any](folder func(State, K, T) State, initial State, table map[K]T) State {
+	return list.Fold(func(s State, t Pair[K, T]) State {
 		return folder(s, t.First, t.Second)
-	}, initial, SortBy(func(p Pair[K, T]) K { return p.First }, table.ToSlice()))
+	}, initial, list.SortBy(func(p Pair[K, T]) K { return p.First }, ToSlice(table)))
 }
 
 // FoldBackMap applies the folder function to each key, value pair in table in reverse order until it reaches the finished state.
 // The key, value pairs are sorted by key.
-func FoldBackMap[K constraints.Ordered, T, State any](folder func(K, T, State) State, initial State, table SimpleMap[K, T]) State {
-	return FoldBack(func(t Pair[K, T], s State) State {
+func FoldBackMap[K constraints.Ordered, T, State any](folder func(K, T, State) State, initial State, table map[K]T) State {
+	return list.FoldBack(func(t Pair[K, T], s State) State {
 		return folder(t.First, t.Second, s)
-	}, SortBy(func(p Pair[K, T]) K { return p.First }, table.ToSlice()), initial)
+	}, list.SortBy(func(p Pair[K, T]) K { return p.First }, ToSlice(table)), initial)
 }
 
 // MapTo creates a new map from mapping each key, value pair in table with the mapping function.
-func MapTo[K comparable, T, R any](mapping func(K, T) R, table SimpleMap[K, T]) SimpleMap[K, R] {
-	output := SimpleMap[K, R]{}
+func MapTo[K comparable, T, R any](mapping func(K, T) R, table map[K]T) map[K]R {
+	output := map[K]R{}
 	for key, value := range table {
 		output[key] = mapping(key, value)
 	}
