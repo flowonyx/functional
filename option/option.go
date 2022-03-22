@@ -5,6 +5,8 @@ import (
 	"strconv"
 )
 
+// Option is a type that allows optional values. It is similar to a Sum type
+// and can either be Some(value) or None.
 type Option[T any] struct {
 	value *some[T]
 }
@@ -21,22 +23,28 @@ type some[T any] struct {
 	value T
 }
 
+// Some creates an option with a value.
 func Some[T any](value T) Option[T] {
 	return Option[T]{value: &some[T]{value: value}}
 }
 
+// None creates an option with no value.
 func None[T any]() Option[T] {
 	return Option[T]{value: nil}
 }
 
+// IsSome tests if the option contains a value.
 func (o Option[T]) IsSome() bool {
 	return o.value != nil
 }
 
+// IsNone tests whether the option does not contain a value.
 func (o Option[T]) IsNone() bool {
 	return o.value == nil
 }
 
+// Value returns the value in the option.
+// If the option is None, it returns the zero value for the type.
 func (o Option[T]) Value() T {
 	if o.IsNone() {
 		r := new(T)
