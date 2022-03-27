@@ -1,6 +1,6 @@
 package list
 
-// Permute returns a list with all elements permuted according to the specified permutation.
+// Permute returns a slice with all items rearranged by the indexMap function.
 func Permute[T any](indexMap func(int) int, values []T) []T {
 	output := make([]T, len(values))
 	Iteri(func(i int, t T) {

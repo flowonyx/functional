@@ -2,7 +2,7 @@ package list
 
 import . "github.com/flowonyx/functional"
 
-// AllPairs returns a new list that contains all pairings of elements from two lists.
+// AllPairs returns a slice of all pairs of items from two slices.
 func AllPairs[T, T2 any](input1 []T, input2 []T2) []Pair[T, T2] {
 	output := Empty[Pair[T, T2]](len(input1) * len(input2))
 
@@ -15,8 +15,8 @@ func AllPairs[T, T2 any](input1 []T, input2 []T2) []Pair[T, T2] {
 	return output
 }
 
-// Pairwise returns a list of each element in the input list and its predecessor, with the exception of the first element
-// which is only returned as the predecessor of the second element.
+// Pairwise returns a slice of each item in the input slice and the one before it, except for the first item
+// which is only returned as the one before the second element.
 func Pairwise[T any](input []T) []Pair[T, T] {
 	if len(input) == 0 {
 		return []Pair[T, T]{}

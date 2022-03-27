@@ -4,8 +4,8 @@ import (
 	"golang.org/x/exp/slices"
 )
 
-// Partition splits the collection into two collections, containing the elements for which the given predicate returns True and False respectively.
-// Element order is preserved in both of the created lists.
+// Partition splits the slice into two slices. The first slice contains the items for which the given predicate returns True,
+// and the second slice contains the items for which the given predicate returns False respectively.
 func Partition[T any](predicate func(T) bool, values []T) (trueValues []T, falseValues []T) {
 	trueValues = Empty[T](len(values))
 	falseValues = Empty[T](len(values))
