@@ -61,7 +61,20 @@ func TryLast[T any](values []T) option.Option[T] {
 // If values contains no items, it will panic with an index out of range.
 // This should only be used when you are certain there is at least one item in values.
 func MustHead[T any](values []T) T {
+	if len(values) == 0 {
+		panic("MustHead called with empty slice")
+	}
 	return values[0]
+}
+
+// MustLast returns the last item from values.
+// If values contains no items, it will panic with an index out of range.
+// This should only be used when you are certain there is at least one item in values.
+func MustLast[T any](values []T) T {
+	if len(values) == 0 {
+		panic("MustLast called with empty slice")
+	}
+	return values[len(values)-1]
 }
 
 // Cons makes a new list with head at the beginning and the items in tail after that.
