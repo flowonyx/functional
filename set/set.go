@@ -304,21 +304,21 @@ func Map[T comparable, R comparable](mapping func(T) R, s Set[T]) Set[R] {
 }
 
 // MaxElement finds the largest item in the Set s.
-func MaxElement[T constraints.Ordered](s Set[T]) T {
+func MaxElement[T constraints.Ordered](s Set[T]) (T, error) {
 	return list.Max(s.Items()...)
 }
 
 // MinElement finds the smallest item in the Set s.
-func MinElement[T constraints.Ordered](s Set[T]) T {
+func MinElement[T constraints.Ordered](s Set[T]) (T, error) {
 	return list.Min(s.Items()...)
 }
 
 // MaxElementBy finds the largest item in the Set s using the return values from projection for comparison.
-func MaxElementBy[T comparable, R constraints.Ordered](projection func(T) R, s Set[T]) T {
+func MaxElementBy[T comparable, R constraints.Ordered](projection func(T) R, s Set[T]) (T, error) {
 	return list.MaxBy(projection, s.Items()...)
 }
 
 // MinElementBy finds the smallest item in the Set s using the return values from projection for comparison.
-func MinElementBy[T comparable, R constraints.Ordered](projection func(T) R, s Set[T]) T {
+func MinElementBy[T comparable, R constraints.Ordered](projection func(T) R, s Set[T]) (T, error) {
 	return list.MinBy(projection, s.Items()...)
 }

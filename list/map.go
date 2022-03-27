@@ -10,7 +10,7 @@ func Map[T, R any](mapping func(T) R, values []T) []R {
 
 // Map2 applies mapping to pairs of values from the two slices and returns the results as a new slice.
 func Map2[T, T2, R any](mapping func(T, T2) R, values1 []T, values2 []T2) []R {
-	min := Min(len(values1), len(values2))
+	min, _ := Min(len(values1), len(values2))
 	t3 := make([]R, min)
 	iter := func(i int, t T, t2 T2) { t3[i] = mapping(t, t2) }
 	Iteri2(iter, values1, values2)
@@ -19,7 +19,7 @@ func Map2[T, T2, R any](mapping func(T, T2) R, values1 []T, values2 []T2) []R {
 
 // Map3 applies mapping to three values from the three slices and returns the results as a new slice.
 func Map3[T, T2, T3, R any](action func(T, T2, T3) R, values1 []T, values2 []T2, values3 []T3) []R {
-	min := Min(len(values1), len(values2), len(values3))
+	min, _ := Min(len(values1), len(values2), len(values3))
 	output := make([]R, min)
 	iter := func(i int, t T, t2 T2, t3 T3) { output[i] = action(t, t2, t3) }
 	Iteri3(iter, values1, values2, values3)
@@ -36,7 +36,7 @@ func Mapi[T, R any](mapping func(int, T) R, values []T) []R {
 
 // Mapi2 applies mapping to pairs of values with the index of each value from the two slices and returns the results as a new slice.
 func Mapi2[T, T2, R any](mapping func(int, T, T2) R, values1 []T, values2 []T2) []R {
-	min := Min(len(values1), len(values2))
+	min, _ := Min(len(values1), len(values2))
 	t3 := make([]R, min)
 	iter := func(i int, t T, t2 T2) { t3[i] = mapping(i, t, t2) }
 	Iteri2(iter, values1, values2)
@@ -45,7 +45,7 @@ func Mapi2[T, T2, R any](mapping func(int, T, T2) R, values1 []T, values2 []T2) 
 
 // Mapi3 applies mapping to three values with the index of each value from the three slices and returns the results as a new slice.
 func Mapi3[T, T2, T3, R any](mapping func(int, T, T2, T3) R, values1 []T, values2 []T2, values3 []T3) []R {
-	min := Min(len(values1), len(values2), len(values3))
+	min, _ := Min(len(values1), len(values2), len(values3))
 	output := make([]R, min)
 	iter := func(i int, t T, t2 T2, t3 T3) { output[i] = mapping(i, t, t2, t3) }
 	Iteri3(iter, values1, values2, values3)

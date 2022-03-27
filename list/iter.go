@@ -15,28 +15,28 @@ func IterRev[T any](action func(T), values []T) {
 // Iter2 iterates over two slices of values, applying action to each pair of values.
 // It only iterates until the end of the shortest of the value slices.
 func Iter2[T, T2 any](action func(T, T2), values1 []T, values2 []T2) {
-	min := Min(LastIndexOf(values1), LastIndexOf(values2))
+	min, _ := Min(LastIndexOf(values1), LastIndexOf(values2))
 	DoRangeTo(func(i int) { action(values1[i], values2[i]) }, min)
 }
 
 // Iter2Rev iterates over two slices of values in reverse, applying action to each pair of values.
 // It only iterates until the end of the shortest of the value slices.
 func Iter2Rev[T, T2 any](action func(T, T2), values1 []T, values2 []T2) {
-	min := Min(LastIndexOf(values1), LastIndexOf(values2))
+	min, _ := Min(LastIndexOf(values1), LastIndexOf(values2))
 	DoRangeToRev(func(i int) { action(values1[i], values2[i]) }, min)
 }
 
 // Iter3 iterates over three slices of values, applying action to each series of values.
 // It only iterates until the end of the shortest of the value slices.
 func Iter3[T, T2, T3 any](action func(T, T2, T3), values1 []T, values2 []T2, values3 []T3) {
-	min := Min(LastIndexOf(values1), LastIndexOf(values2), LastIndexOf(values3))
+	min, _ := Min(LastIndexOf(values1), LastIndexOf(values2), LastIndexOf(values3))
 	DoRangeTo(func(i int) { action(values1[i], values2[i], values3[i]) }, min)
 }
 
 // Iter3Rev iterates over three slices of values in reverse, applying action to each series of values.
 // It only iterates until the end of the shortest of the value slices.
 func Iter3Rev[T, T2, T3 any](action func(T, T2, T3), values1 []T, values2 []T2, values3 []T3) {
-	min := Min(LastIndexOf(values1), LastIndexOf(values2), LastIndexOf(values3))
+	min, _ := Min(LastIndexOf(values1), LastIndexOf(values2), LastIndexOf(values3))
 	DoRangeToRev(func(i int) { action(values1[i], values2[i], values3[i]) }, min)
 }
 
@@ -55,28 +55,28 @@ func IteriRev[T any](action func(int, T), values []T) {
 // Iteri2 iterates over the two slices of values, applying action to each pair of values with the index of the values.
 // It only iterates until the end of the shortest of the value slices.
 func Iteri2[T, T2 any](action func(int, T, T2), values1 []T, values2 []T2) {
-	min := Min(LastIndexOf(values1), LastIndexOf(values2))
+	min, _ := Min(LastIndexOf(values1), LastIndexOf(values2))
 	DoRangeTo(func(i int) { action(i, values1[i], values2[i]) }, min)
 }
 
 // Iteri2Rev iterates over the two slices of values in reverse, applying action to each pair of values with the index of the values.
 // It only iterates until the end of the shortest of the value slices.
 func Iteri2Rev[T, T2 any](action func(int, T, T2), values1 []T, values2 []T2) {
-	min := Min(LastIndexOf(values1), LastIndexOf(values2))
+	min, _ := Min(LastIndexOf(values1), LastIndexOf(values2))
 	DoRangeToRev(func(i int) { action(i, values1[i], values2[i]) }, min)
 }
 
 // Iteri3 iterates over the three slices of values, applying action to each series of values with the index of the values.
 // It only iterates until the end of the shortest of the value slices.
 func Iteri3[T, T2, T3 any](action func(int, T, T2, T3), values1 []T, values2 []T2, values3 []T3) {
-	min := Min(LastIndexOf(values1), LastIndexOf(values2), LastIndexOf(values3))
+	min, _ := Min(LastIndexOf(values1), LastIndexOf(values2), LastIndexOf(values3))
 	DoRangeTo(func(i int) { action(i, values1[i], values2[i], values3[i]) }, min)
 }
 
 // Iteri3Rev iterates over the three slices of values in reverse, applying action to each series of values with the index of the values.
 // It only iterates until the end of the shortest of the value slices.
 func Iteri3Rev[T, T2, T3 any](action func(int, T, T2, T3), values1 []T, values2 []T2, values3 []T3) {
-	min := Min(LastIndexOf(values1), LastIndexOf(values2), LastIndexOf(values3))
+	min, _ := Min(LastIndexOf(values1), LastIndexOf(values2), LastIndexOf(values3))
 	DoRangeToRev(func(i int) { action(i, values1[i], values2[i], values3[i]) }, min)
 }
 

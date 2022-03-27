@@ -74,7 +74,7 @@ func ForAll[T any](predicate func(T) bool, values []T) bool {
 
 // ForAll2 tests whether all pairs of values from values1 and values2 match predicate.
 func ForAll2[T any, T2 any](predicate func(T, T2) bool, values1 []T, values2 []T2) bool {
-	min := Min(len(values1), len(values2))
+	min, _ := Min(len(values1), len(values2))
 	if min == 0 {
 		return true
 	}

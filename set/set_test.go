@@ -176,14 +176,14 @@ func ExampleMap() {
 
 func ExampleMaxElement() {
 	s := FromSlice([]int{1, 2, 3, 4})
-	r := MaxElement(s)
+	r, _ := MaxElement(s)
 	fmt.Println(r)
 	// Output: 4
 }
 
 func ExampleMaxElementBy() {
 	s := FromSlice([]int{1, 2, 3, 4})
-	r := MaxElementBy(func(v int) int {
+	r, _ := MaxElementBy(func(v int) int {
 		if v < 3 {
 			return v * 10
 		}
@@ -195,14 +195,14 @@ func ExampleMaxElementBy() {
 
 func ExampleMinElement() {
 	s := FromSlice([]int{1, 2, 3, 4})
-	r := MinElement(s)
+	r, _ := MinElement(s)
 	fmt.Println(r)
 	// Output: 1
 }
 
 func ExampleMinElementBy() {
 	s := FromSlice([]int{1, 2, 3, 4})
-	r := MinElementBy(func(v int) int {
+	r, _ := MinElementBy(func(v int) int {
 		if v < 3 {
 			return v * 10
 		}

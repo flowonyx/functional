@@ -43,6 +43,6 @@ func RemoveManyAt[T any](index int, count int, values []T) ([]T, error) {
 	if index < 0 || index >= len(values) {
 		return nil, fmt.Errorf("%w: RemoveManyAt(%d, [%d]%T)", errors.IndexOutOfRangeErr, index, len(values), values)
 	}
-	count = Min(count, len(values)-index)
+	count, _ = Min(count, len(values)-index)
 	return append(values[0:index], values[index+count:]...), nil
 }
