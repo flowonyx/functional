@@ -1,5 +1,7 @@
+[![Go Reference](https://pkg.go.dev/badge/github.com/flowonyx/functional/math.svg)](https://pkg.go.dev/github.com/flowonyx/functional/math)
+
 # Functional Math
-                                                                                                                          
+
 It is doubtful that this package will be useful to many. It is mostly wrapping some of the functions from the standard library `math` and `strconv` packages to make them generic and take care of ugly casting for the caller (you can use `int` and not have to cast it to `float64` and back). Below are the functions that are here. As I am pretty much just wrapping standard functions, I did not write any tests.
 
 # Get it

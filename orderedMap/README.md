@@ -1,3 +1,5 @@
+[![Go Reference](https://pkg.go.dev/badge/github.com/flowonyx/functional/orderedMap.svg)](https://pkg.go.dev/github.com/flowonyx/functional/orderedMap)
+
 # Functional Ordered Map
                                                                                                                                                                               
 There are probably better implementations of an ordered map. This one is very simple, based on a slice of `functional.Pair`s to store the items in order. This order will be in order that items were added or if a comparing function is supplied, in sorted order. It is not safe for concurrent use any more than the standard `map` type.

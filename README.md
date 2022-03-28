@@ -1,3 +1,5 @@
+[![Go Reference](https://pkg.go.dev/badge/github.com/flowonyx/functional.svg)](https://pkg.go.dev/github.com/flowonyx/functional)
+
 # Functional
 
 `functional` is a Go package for functional programming with generics (it requires at least Go 1.18). Most of the functionality is found in the sub packages.

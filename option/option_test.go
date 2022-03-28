@@ -43,7 +43,7 @@ func ExampleMap() {
 	input := []option.Option[int]{option.None[int](), option.Some(1)}
 	r := list.Map(functional.Curry2To1(option.Map[int, string], f), input)
 	fmt.Println(r)
-	// Output: [None Some(i:1)]
+	// Output: [None Some("i:1")]
 }
 
 func ExampleBind() {

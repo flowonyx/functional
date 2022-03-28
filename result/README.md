@@ -1,5 +1,7 @@
+[![Go Reference](https://pkg.go.dev/badge/github.com/flowonyx/functional/result.svg)](https://pkg.go.dev/github.com/flowonyx/functional/result)
+
 # Functional Results
-                                                                                                                                     
+
 A `Result` type is similar to an `Option` but instead of `Some` and `None`, we need it to have `Success` and `Failure` where both have values associated with them.
 
 # Get it

@@ -1,5 +1,7 @@
+[![Go Reference](https://pkg.go.dev/badge/github.com/flowonyx/functional/set.svg)](https://pkg.go.dev/github.com/flowonyx/functional/set)
+
 # Functional Sets
-                                                                                                               
+
 The package provides a generic set type and functions that work with it. It is based on the `orderedMap.OrderedMap` type which means it is not safe for concurrent usage.
 
 # Get it

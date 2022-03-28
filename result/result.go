@@ -143,7 +143,10 @@ func MapError[S, F any](mapping func(F) F, r Result[S, F]) Result[S, F] {
 
 // DefaultValue returns the value of r if r is Success. Otherwise, it returns success.
 func DefaultValue[S, F any](success S, r Result[S, F]) S {
-	return option.DefaultValue(success, r)
+	if r.IsFailure() {
+		return success
+	}
+	return r.SuccessValue()
 }
 
 // DefaultWith returns the value of r if r is Success. Otherwise, it returns the output of defThunk.

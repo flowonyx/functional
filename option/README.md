@@ -1,5 +1,7 @@
+[![Go Reference](https://pkg.go.dev/badge/github.com/flowonyx/functional/option.svg)](https://pkg.go.dev/github.com/flowonyx/functional/option)
+
 # Functional Options
-                                                                                                                                              
+
 Optional types are common in a number of programming languages today. The API for this `Option` type is based on the standard library for F# although it is not completely the same.
 
 # Get it

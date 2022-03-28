@@ -1,4 +1,6 @@
-# Functional Maps
+[![Go Reference](https://pkg.go.dev/badge/github.com/flowonyx/functional/maps.svg)](https://pkg.go.dev/github.com/flowonyx/functional/maps)
+
+# Functional Map
                                                                                                                          
 This package provides some functions for working Go maps, using generics (at least Go 1.18).
 

@@ -1,3 +1,5 @@
+[![Go Reference](https://pkg.go.dev/badge/github.com/flowonyx/functional/strings.svg)](https://pkg.go.dev/github.com/flowonyx/functional/strings)
+
 # Functional Strings
 
 This package has functions for working with `string`s, `rune`s, and types that are based on them. Many of them are just wrapping functions from the standard `strings` package, `strconv`, or `golang.org/x/text/cases` but uses generics so casting is unnecessary for types based on `string`s or `rune`s and some can work on either `string`s or `rune`s.

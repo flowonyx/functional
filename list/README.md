@@ -1,4 +1,6 @@
-# Functional Lists                                                                                                                         
+[![Go Reference](https://pkg.go.dev/badge/github.com/flowonyx/functional/list.svg)](https://pkg.go.dev/github.com/flowonyx/functional/list)
+
+# Functional Lists
 
 This package provides many generic functions for working with slices. The API here is mostly inspired by the `list` library in the F# standard library. There are some minor changes and the implementation is just how I thought it should be done. Several of these functions may not be very useful in Go but I have included them for the sake of having a complete set of functions that can be passed around when needed. You can generally just copy the function definition into your own code. That will also protect against changes in the API which may happen in the future. This is a very early version and may or may not be changed in the future as I see a need.
 
