@@ -4,8 +4,6 @@ package result
 
 import (
 	"fmt"
-
-	"github.com/flowonyx/functional/option"
 )
 
 type container[T any] struct {
@@ -151,22 +149,28 @@ func DefaultValue[S, F any](success S, r Result[S, F]) S {
 
 // DefaultWith returns the value of r if r is Success. Otherwise, it returns the output of defThunk.
 func DefaultWith[S, F any](defThunk func() S, r Result[S, F]) S {
-	return option.DefaultWith(defThunk, r)
+	if r.IsFailure() {
+		return defThunk()
+	}
+	return r.SuccessValue()
 }
 
 // Contains tests whether the result contains value.
 func Contains[S comparable, F any](value S, r Result[S, F]) bool {
-	return option.Contains(value, r)
+	return r.IsSuccess() && r.SuccessValue() == value
 }
 
 // Count returns 0 if this result is Failure. Otherwise returns 1.
 func Count[S, F any](r Result[S, F]) int {
-	return option.Count(r)
+	if r.IsFailure() {
+		return 0
+	}
+	return 1
 }
 
 // Exists tests whether the value of r matches the predicate. If the Result is an error, it returns false.
 func Exists[S, F any](predicate func(S) bool, r Result[S, F]) bool {
-	return option.Exists(predicate, r)
+	return r.IsSuccess() && predicate(r.SuccessValue())
 }
 
 // Flatten returns the inner Result when Results are nested.
@@ -180,25 +184,34 @@ func Flatten[S, F any](rr Result[Result[S, F], F]) Result[S, F] {
 // Fold applies the folder function to a Result with s being the initial state for the folder.
 // If the Result is an Failure, the initial state is returned.
 func Fold[S, F, State any](folder func(State, S) State, s State, r Result[S, F]) State {
-	return option.Fold(folder, s, r)
+	if r.IsFailure() {
+		return s
+	}
+	return folder(s, r.SuccessValue())
 }
 
 // FoldBack applies the folder function to a Result with s being in the initial state for the folder.
 // If the Result is an Failure, the initial state is returned.
 func FoldBack[S, F, State any](folder func(S, State) State, r Result[S, F], s State) State {
-	return option.FoldBack(folder, r, s)
+	if r.IsFailure() {
+		return s
+	}
+	return folder(r.SuccessValue(), s)
 }
 
 // ForAll tests whether the value contained in the Result matches the predicate.
 // It will always return true if the Result is a Failure.
 func ForAll[S, F any](predicate func(S) bool, r Result[S, F]) bool {
-	return option.ForAll(predicate, r)
+	return r.IsFailure() || predicate(r.SuccessValue())
 }
 
 // Get returns the value of the Result.
 // If Result is a Failure, it panics.
 func Get[S, F any](r Result[S, F]) S {
-	return option.Get[S](r)
+	if r.IsFailure() {
+		panic("cannot call Get on a Failure Result")
+	}
+	return r.SuccessValue()
 }
 
 // IsNone returns true if the Result is a Failure.
@@ -213,7 +226,10 @@ func IsSome[S, F any](r Result[S, F]) bool {
 
 // Iter applies the action to the result.
 func Iter[S, F any](action func(S), r Result[S, F]) {
-	option.Iter(action, r)
+	if r.IsFailure() {
+		return
+	}
+	action(r.SuccessValue())
 }
 
 // Map2 applies function f to two Results and returns the function's return value as a Result.
@@ -255,24 +271,37 @@ func OfNullable[S, F any](value *S) Result[S, F] {
 
 // OrElse returns r if it is Success or ifNone if r is a Failure.
 func OrElse[S, F any](ifNone Result[S, F], r Result[S, F]) Result[S, F] {
-	return option.OrElse[S](ifNone, r)
+	if r.IsFailure() {
+		return ifNone
+	}
+	return r
 }
 
 // OrElseWith returns r if it is Success or the Result returned from ifNoneThunk if r is an Error.
 func OrElseWith[S, F any](ifNoneThunk func() Result[S, F], r Result[S, F]) Result[S, F] {
-	return option.OrElseWith[S](ifNoneThunk, r)
+	if r.IsFailure() {
+		return ifNoneThunk()
+	}
+	return r
 }
 
 // ToSlice returns the value in Result as a single item slice.
 // If the Result is an Failure, it returns an empty slice.
 func ToSlice[S, F any](r Result[S, F]) []S {
-	return option.ToSlice[S](r)
+	if r.IsFailure() {
+		return []S{}
+	}
+	return []S{r.SuccessValue()}
 }
 
 // ToNullable returns a pointer to the value in the Result if it is Success.
 // If the Result is an Failure, it returns nil.
 func ToNullable[S, F any](r Result[S, F]) *S {
-	return option.ToNullable[S](r)
+	if r.IsFailure() {
+		return nil
+	}
+	v := r.SuccessValue()
+	return &v
 }
 
 // Lift adapts a function that returns a value and an error into a function
