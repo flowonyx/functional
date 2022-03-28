@@ -32,8 +32,8 @@ There is a smaller interface the leaves out `Value`, and it is used in any funct
 
 ```go
 type OptionalCheckOnly interface {
-	IsSome() bool
-	IsNone() bool
+  IsSome() bool
+  IsNone() bool
 }
 ```
 
