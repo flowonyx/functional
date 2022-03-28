@@ -1,12 +1,4 @@
- ▄▄▄▄▄▄▄ ▄▄   ▄▄ ▄▄    ▄ ▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄ ▄▄▄ ▄▄▄▄▄▄▄ ▄▄    ▄ ▄▄▄▄▄▄ ▄▄▄     
-█       █  █ █  █  █  █ █       █       █   █       █  █  █ █      █   █    
-█    ▄▄▄█  █ █  █   █▄█ █       █▄     ▄█   █   ▄   █   █▄█ █  ▄   █   █    
-█   █▄▄▄█  █▄█  █       █     ▄▄█ █   █ █   █  █ █  █       █ █▄█  █   █    
-█    ▄▄▄█       █  ▄    █    █    █   █ █   █  █▄█  █  ▄    █      █   █▄▄▄ 
-█   █   █       █ █ █   █    █▄▄  █   █ █   █       █ █ █   █  ▄   █       █
-█▄▄▄█   █▄▄▄▄▄▄▄█▄█  █▄▄█▄▄▄▄▄▄▄█ █▄▄▄█ █▄▄▄█▄▄▄▄▄▄▄█▄█  █▄▄█▄█ █▄▄█▄▄▄▄▄▄▄█
-
-ᶘಠᴥಠᶅ
+# Functional
 
 `functional` is a Go package for functional programming with generics (it requires at least Go 1.18). Most of the functionality is found in the sub packages.
 
