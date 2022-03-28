@@ -22,7 +22,7 @@ There may be a reason to use a different type for optional values but still want
 
 ```go
 type Optional[T any] interface {
-    IsSome() bool
+  IsSome() bool
 	IsNone() bool
 	Value() T
 }
