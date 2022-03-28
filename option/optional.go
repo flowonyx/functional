@@ -15,46 +15,46 @@ type OptionalCheckOnly interface {
 	IsNone() bool
 }
 
-// HandleOption accepts a input that is an Optional value and two functions that returns errors.
-// whenSome is the function to use when input.IsSome() is true.
-// whenNone is the function to use when input.IsNone() is true.
+// HandleOption accepts an Optional value and two functions that return errors.
+// whenSome is the function to use when o.IsSome() is true.
+// whenNone is the function to use when o.IsNone() is true.
 // The error returned by the function that is used will be returned from HandleOption.
-func HandleOption[T any, TOptional Optional[T], F func(T) error, FN func() error](input TOptional, whenSome F, whenNone FN) error {
+func HandleOption[T any, TOptional Optional[T], F func(T) error, FN func() error](o TOptional, whenSome F, whenNone FN) error {
 	if whenSome == nil {
 		return errors.New("whenSome function must be supplied to HandleOption")
 	}
 	if whenNone == nil {
 		return errors.New("whenNone function must be supplied to HandleOption")
 	}
-	if input.IsNone() {
+	if o.IsNone() {
 		return whenNone()
 	}
-	return whenSome(input.Value())
+	return whenSome(o.Value())
 }
 
-// HandleOptionIgnoreNone accepts a input that is an Optional value and one function that returns errors.
-// whenSome is the function to use when input.IsSome() is true.
-// The error returned by whenSome will be returned from HandleOption or nil will be returned when input.IsNone().
-func HandleOptionIgnoreNone[T any, TOptional Optional[T], F func(T) error](input TOptional, whenSome F) error {
-	return HandleOption(input, whenSome, func() error { return nil })
+// HandleOptionIgnoreNone accepts an Optional value and one function that returns an error.
+// whenSome is the function to use when o.IsSome() is true.
+// The error returned by whenSome will be returned from HandleOptionIgnoreNone or nil will be returned when o.IsNone().
+func HandleOptionIgnoreNone[T any, TOptional Optional[T], F func(T) error](o TOptional, whenSome F) error {
+	return HandleOption(o, whenSome, func() error { return nil })
 }
 
-// DefaultValue tests whether input.IsNone() and returns value if true.
-// If input.IsSome(), input.Value() is returned.
-func DefaultValue[T any, TOptional Optional[T]](value T, input TOptional) T {
-	if input.IsNone() {
+// DefaultValue tests whether o.IsNone() and returns value if true.
+// If o.IsSome(), o.Value() is returned.
+func DefaultValue[T any, TOptional Optional[T]](value T, o TOptional) T {
+	if o.IsNone() {
 		return value
 	}
-	return input.Value()
+	return o.Value()
 }
 
-// DefaultValue tests whether input.IsNone() and returns the result of defThunk if true.
-// If input.IsSome(), input.Value() is returned.
-func DefaultWith[T any, TOptional Optional[T]](defThunk func() T, input TOptional) T {
-	if input.IsNone() {
+// DefaultWith tests whether o.IsNone() and returns the result of defThunk if true.
+// If o.IsSome(), o.Value() is returned.
+func DefaultWith[T any, TOptional Optional[T]](defThunk func() T, o TOptional) T {
+	if o.IsNone() {
 		return defThunk()
 	}
-	return input.Value()
+	return o.Value()
 }
 
 // Contains tests whether the value in the Optional value o is equal to value.

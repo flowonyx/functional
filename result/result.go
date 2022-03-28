@@ -63,7 +63,7 @@ func (r Result[_, _]) IsNone() bool {
 	return r.failure != nil
 }
 
-// Value returns the value if this Result is OK. If the result is an error, Value returns the zero value of the value type.
+// SuccessValue returns the value if this Result is Success. If the result is an error, Value returns the zero value of the value type.
 func (r Result[S, _]) SuccessValue() S {
 	if r.value == nil {
 		v := new(S)
@@ -72,7 +72,7 @@ func (r Result[S, _]) SuccessValue() S {
 	return r.value.value
 }
 
-// Err returns the error if this Result is Error. Otherwise, it returns nil.
+// FailureValue returns the error if this Result is Error. Otherwise, it returns nil.
 func (r Result[_, F]) FailureValue() F {
 	if r.failure == nil {
 		v := new(F)
@@ -175,25 +175,25 @@ func Flatten[S, F any](rr Result[Result[S, F], F]) Result[S, F] {
 }
 
 // Fold applies the folder function to a Result with s being the initial state for the folder.
-// If the Result is an Error, the initial state is returned.
+// If the Result is an Failure, the initial state is returned.
 func Fold[S, F, State any](folder func(State, S) State, s State, r Result[S, F]) State {
 	return option.Fold(folder, s, r)
 }
 
 // FoldBack applies the folder function to a Result with s being in the initial state for the folder.
-// If the Result is an Error, the initial state is returned.
+// If the Result is an Failure, the initial state is returned.
 func FoldBack[S, F, State any](folder func(S, State) State, r Result[S, F], s State) State {
 	return option.FoldBack(folder, r, s)
 }
 
-// ForAll tests whether the value contains the Result matches the predicate.
-// It will always return true if the Result is an Error.
+// ForAll tests whether the value contained in the Result matches the predicate.
+// It will always return true if the Result is a Failure.
 func ForAll[S, F any](predicate func(S) bool, r Result[S, F]) bool {
 	return option.ForAll(predicate, r)
 }
 
 // Get returns the value of the Result.
-// If Result is an Error, it panics.
+// If Result is a Failure, it panics.
 func Get[S, F any](r Result[S, F]) S {
 	return option.Get[S](r)
 }
@@ -272,8 +272,8 @@ func ToNullable[S, F any](r Result[S, F]) *S {
 	return option.ToNullable[S](r)
 }
 
-// Lift adapts a function that that returns a value and an error into a function
-// that returns a Result that will be OK if there is no error and Error if there is an error.
+// Lift adapts a function that returns a value and an error into a function
+// that returns a Result that will be Success if there is no error and Failure if there is an error.
 func Lift[S, F any](f func() (S, error)) func() Result[S, F] {
 	return func() Result[S, F] {
 		s, err := f()
@@ -292,8 +292,8 @@ func Lift[S, F any](f func() (S, error)) func() Result[S, F] {
 	}
 }
 
-// Lift1 adapts a function that that accepts one input and returns a value and an error into a function
-// that returns a Result that will be OK if there is no error and Error if there is an error.
+// Lift1 adapts a function that accepts one input and returns a value and an error into a function
+// that returns a Result that will be Success if there is no error and Failure if there is an error.
 func Lift1[T, S, F any](f func(T) (S, error)) func(T) Result[S, F] {
 	return func(input T) Result[S, F] {
 		s, err := f(input)
@@ -302,8 +302,8 @@ func Lift1[T, S, F any](f func(T) (S, error)) func(T) Result[S, F] {
 	}
 }
 
-// Lift2 adapts a function that that accepts two inputs and returns a value and an error into a function
-// that returns a Result that will be OK if there is no error and Error if there is an error.
+// Lift2 adapts a function that accepts two inputs and returns a value and an error into a function
+// that returns a Result that will be Success if there is no error and Failure if there is an error.
 func Lift2[T1, T2, S, F any](f func(T1, T2) (S, error)) func(T1, T2) Result[S, F] {
 	return func(input1 T1, input2 T2) Result[S, F] {
 		s, err := f(input1, input2)

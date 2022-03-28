@@ -27,7 +27,7 @@ func NewSet[T comparable](lessFunc ...func(T, T) bool) Set[T] {
 
 // Singleton creates a set of exactly one item.
 // This does not actually prevent you from adding more items later,
-// so this is a way to creat a set and add the first item in one call.
+// so this is a way to create a set and add the first item in one call.
 func Singleton[T comparable](item T) Set[T] {
 	s := NewSet[T]()
 	s.Add(item)
@@ -143,7 +143,8 @@ func (s Set[T]) IsSupersetOf(potentialSubset Set[T]) bool {
 }
 
 // IndexOf finds the index of the item within the Set.
-// The order of items within the Set is the order in which the items were added.
+// The order of items within the Set is the order in which the items were added
+// or sorted order if a comparison function was supplied when this Set was created.
 func (s Set[T]) IndexOf(item T) int {
 	index := -1
 	s.m.Iteri(func(i int, t T, _ struct{}) {

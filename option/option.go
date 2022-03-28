@@ -61,7 +61,7 @@ func Bind[T, R any](f func(T) Option[R], input Option[T]) Option[R] {
 	return f(input.Value())
 }
 
-// Filter retuns o if the value in o matches the predicate.
+// Filter returns o if the value in o matches the predicate.
 // Otherwise, it returns None.
 func Filter[T any](predicate func(T) bool, o Option[T]) Option[T] {
 	if Exists(predicate, o) {

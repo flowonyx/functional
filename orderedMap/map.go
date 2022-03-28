@@ -168,7 +168,7 @@ func (m OrderedMap[Key, T]) Find(key Key) (T, error) {
 	return *(new(T)), fmt.Errorf("OrderedMap.Find(%v): %w", key, errors.KeyNotFoundErr)
 }
 
-// FindKey returns a key that matches the predicate or a KeyNotFound error.
+// FindKey returns a key that matches the predicate or a KeyNotFoundErr error.
 func (m OrderedMap[Key, T]) FindKey(predicate func(Key, T) bool) (Key, error) {
 	for _, p := range m.pairs {
 		key, value := FromPair(p)
