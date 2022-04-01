@@ -44,9 +44,12 @@ func FromTriple[T1, T2, T3 any](t Triple[T1, T2, T3]) (a T1, b T2, c T3) {
 	return t.First, t.Second, t.Third
 }
 
-func (p *Pair[T, T2]) String() string {
+func (p Pair[T, T2]) String() string {
 	var f, s any = p.First, p.Second
 	format := func(item any) string {
+		if s, ok := item.(fmt.Stringer); ok {
+			return s.String()
+		}
 		switch r := item.(type) {
 		case rune:
 			return strconv.QuoteRune(r)
@@ -62,7 +65,7 @@ func (p *Pair[T, T2]) String() string {
 	return fmt.Sprintf("(%s, %s)", first, second)
 }
 
-func (p *Triple[T, T2, T3]) String() string {
+func (p Triple[T, T2, T3]) String() string {
 	var f, s, t any = p.First, p.Second, p.Third
 	format := func(item any) string {
 		switch r := item.(type) {
