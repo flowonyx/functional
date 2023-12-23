@@ -10,7 +10,7 @@ func ExampleIndexed() {
 	input := []string{"a", "b", "c"}
 	r := list.Indexed(input)
 	fmt.Println(r)
-	// Output: [{0 a} {1 b} {2 c}]
+	// Output: [(0, "a") (1, "b") (2, "c")]
 }
 
 func ExampleIndexOf() {

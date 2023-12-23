@@ -9,7 +9,7 @@ import (
 func ExampleGroupBy() {
 	r := list.GroupBy(func(i int) int { return i % 2 }, []int{1, 2, 3, 4, 5})
 	fmt.Println(r)
-	// Output: [{1 [1 3 5]} {0 [2 4]}]
+	// Output: [(1, [1 3 5]) (0, [2 4])]
 }
 
 func ExampleGroupByAsMap() {

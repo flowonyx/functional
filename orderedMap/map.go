@@ -15,13 +15,13 @@ import (
 // OrderedMap is a map-like structure which keeps items in order.
 type OrderedMap[Key comparable, T any] struct {
 	pairs []Pair[Key, T]
-	less  func(Pair[Key, T], Pair[Key, T]) bool
+	less  func(Pair[Key, T], Pair[Key, T]) int
 }
 
 // NewOrderedMap creates a new OrderedMap. If lessFunc is provided, it is used to keep the items in sorted order.
 // If lessFunc is not provided, the items are kept in the order in which they are added.
-func NewOrderedMap[Key comparable, T any](lessFunc ...func(Pair[Key, T], Pair[Key, T]) bool) OrderedMap[Key, T] {
-	var lf func(Pair[Key, T], Pair[Key, T]) bool
+func NewOrderedMap[Key comparable, T any](lessFunc ...func(Pair[Key, T], Pair[Key, T]) int) OrderedMap[Key, T] {
+	var lf func(Pair[Key, T], Pair[Key, T]) int
 	if len(lessFunc) > 0 {
 		lf = lessFunc[0]
 	}
@@ -33,8 +33,8 @@ func NewOrderedMap[Key comparable, T any](lessFunc ...func(Pair[Key, T], Pair[Ke
 
 // FromSlice creates an OrderedMap from a slice of Key, Value Pairs. If lessFunc is provided, the items are sorted.
 // If a key is repeated, the last value for the key is used.
-func FromSlice[Key comparable, T any](s []Pair[Key, T], lessFunc ...func(Pair[Key, T], Pair[Key, T]) bool) OrderedMap[Key, T] {
-	var lf func(Pair[Key, T], Pair[Key, T]) bool
+func FromSlice[Key comparable, T any](s []Pair[Key, T], lessFunc ...func(Pair[Key, T], Pair[Key, T]) int) OrderedMap[Key, T] {
+	var lf func(Pair[Key, T], Pair[Key, T]) int
 	if len(lessFunc) > 0 {
 		lf = lessFunc[0]
 	}

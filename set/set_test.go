@@ -7,7 +7,15 @@ import (
 )
 
 func ExampleNewSet() {
-	less := func(a, b int) bool { return a > b }
+	less := func(a, b int) int {
+		if a > b {
+			return -1
+		}
+		if b < a {
+			return 1
+		}
+		return 0
+	}
 	s := NewSet(less)
 	s.Add(1)
 	s.Add(2)
@@ -25,7 +33,15 @@ func ExampleSingleton() {
 
 func ExampleFromSlice() {
 	s := FromSlice([]string{"one", "two", "one"})
-	s2 := FromSlice([]int{1, 3, 4, 2, 4, 3, 2}, func(a, b int) bool { return a < b })
+	s2 := FromSlice([]int{1, 3, 4, 2, 4, 3, 2}, func(a, b int) int {
+		if a < b {
+			return -1
+		}
+		if b < a {
+			return 1
+		}
+		return 0
+	})
 	fmt.Println(s.Items(), s2.Items())
 	// Output: [one two] [1 2 3 4]
 }
@@ -82,7 +98,15 @@ func ExampleSet_IsProperSupersetOf() {
 }
 
 func ExampleSet_IndexOf() {
-	s := NewSet(func(a, b int) bool { return a < b })
+	s := NewSet(func(a, b int) int {
+		if a < b {
+			return -1
+		}
+		if b < a {
+			return 1
+		}
+		return 0
+	})
 	s.Add(1)
 	s.Add(3)
 	s.Add(2)

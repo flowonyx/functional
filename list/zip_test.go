@@ -13,7 +13,7 @@ func ExampleZip() {
 
 	r := list.Zip(input1, input2)
 	fmt.Println(r)
-	// Output: [{1 one} {2 two}]
+	// Output: [(1, "one") (2, "two")]
 }
 
 func ExampleZip3() {
@@ -23,7 +23,7 @@ func ExampleZip3() {
 
 	r := list.Zip3(input1, input2, input3)
 	fmt.Println(r)
-	// Output: [{1 one I} {2 two II}]
+	// Output: [(1, "one", "I") (2, "two", "II")]
 }
 
 func ExampleUnzip() {

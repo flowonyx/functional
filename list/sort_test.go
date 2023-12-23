@@ -41,8 +41,14 @@ func ExampleSortByDescending() {
 
 func ExampleSortWith() {
 	input := []int{3, 2, 5, 8, 1}
-	r := list.SortWith(func(t1, t2 int) bool {
-		return t1 > t2
+	r := list.SortWith(func(t1, t2 int) int {
+		if t1 > t2 {
+			return -1
+		}
+		if t2 > t1 {
+			return 1
+		}
+		return 0
 	}, input)
 	fmt.Println(r)
 	// Output: [8 5 3 2 1]

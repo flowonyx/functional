@@ -15,10 +15,10 @@ type Set[T comparable] struct {
 
 // NewSet creates a new Set.
 // If lessFunc is provided, it is used in ordering the set.
-func NewSet[T comparable](lessFunc ...func(T, T) bool) Set[T] {
-	var lf func(functional.Pair[T, struct{}], functional.Pair[T, struct{}]) bool
+func NewSet[T comparable](lessFunc ...func(T, T) int) Set[T] {
+	var lf func(functional.Pair[T, struct{}], functional.Pair[T, struct{}]) int
 	if len(lessFunc) > 0 {
-		lf = func(p functional.Pair[T, struct{}], p2 functional.Pair[T, struct{}]) bool {
+		lf = func(p functional.Pair[T, struct{}], p2 functional.Pair[T, struct{}]) int {
 			return lessFunc[0](p.First, p2.First)
 		}
 	}
@@ -43,7 +43,7 @@ func (s Set[T]) clone() Set[T] {
 }
 
 // FromSlice creates a new Set from the items in the given slice.
-func FromSlice[T comparable](input []T, lessFunc ...func(T, T) bool) Set[T] {
+func FromSlice[T comparable](input []T, lessFunc ...func(T, T) int) Set[T] {
 	s := NewSet(lessFunc...)
 	for _, i := range input {
 		s.Add(i)

@@ -2,7 +2,7 @@
 
 # Functional
 
-`functional` is a Go package for functional programming with generics (it requires at least Go 1.18). Most of the functionality is found in the sub packages.
+`functional` is a Go package for functional programming with generics (it requires at least Go 1.21.5 now). Most of the functionality is found in the sub packages.
 
 It is heavily inspired by the standard library API for F#. It is not one-to-one equivalent but most functions that are available in the F# standard library have an equivalent here. There are examples for most functions, which is also mostly how it is tested. You can see the [documentation here](https://pkg.go.dev/github.com/flowonyx/functional).
 

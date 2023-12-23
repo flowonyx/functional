@@ -1,7 +1,7 @@
 module github.com/flowonyx/functional
 
-go 1.18
+go 1.21.5
 
-require golang.org/x/exp v0.0.0-20220217172124-1812c5b45e43
+require golang.org/x/exp v0.0.0-20231219180239-dc181d75b848
 
-require golang.org/x/text v0.3.7
+require golang.org/x/text v0.14.0
